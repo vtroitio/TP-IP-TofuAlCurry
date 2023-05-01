@@ -1,7 +1,7 @@
 -- Completar con los datos del grupo
 --
--- Nombre de Grupo: xx
--- Integrante 1: Nombre Apellido, email, LU
+-- Nombre de Grupo: TofuAlCurry
+-- Integrante 1: Valentin Troitiño, valiktroi16@gmail.com, 709/23
 -- Integrante 2: Nombre Apellido, email, LU
 -- Integrante 3: Nombre Apellido, email, LU
 -- Integrante 4: Nombre Apellido, email, LU
