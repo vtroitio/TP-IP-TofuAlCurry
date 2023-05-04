@@ -81,15 +81,21 @@ amigosDe = undefined
 cantidadDeAmigos :: RedSocial -> Usuario -> Int
 cantidadDeAmigos = undefined
 
--- describir qué hace la función: .....
+-- Compara la cantidad de amigos de todos los usuarios en la red social y devuelve el que tiene más amigos
 usuarioConMasAmigos :: RedSocial -> Usuario
-usuarioConMasAmigos = undefined
+usuarioConMasAmigos red = comparaCantidadDeAmigosDeUsuarios red (usuarios red) (head (usuarios red))
+    where comparaCantidadDeAmigosDeUsuarios _ [] u = u
+          comparaCantidadDeAmigosDeUsuarios red us u
+            | cantidadDeAmigos red (head us) <= cantidadDeAmigos red u = comparaCantidadDeAmigosDeUsuarios red (tail us) u
+            | otherwise = comparaCantidadDeAmigosDeUsuarios red (tail us) (head us)
 
--- describir qué hace la función: .....
+-- Verifica si hay algún usuario en la red social con más de 1.000.000 de amigos
 estaRobertoCarlos :: RedSocial -> Bool
-estaRobertoCarlos = undefined
+estaRobertoCarlos red = verificaCantidadDeAmigosDeUsuarios red (usuarios red)
+    where verificaCantidadDeAmigosDeUsuarios _ [] = False
+          verificaCantidadDeAmigosDeUsuarios red us = cantidadDeAmigos red (head us) > 1000000 || verificaCantidadDeAmigosDeUsuarios red (tail us)
 
--- describir qué hace la función: .....
+-- Devuelve las publicaciones de un usuario
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
 publicacionesDe = undefined
 
