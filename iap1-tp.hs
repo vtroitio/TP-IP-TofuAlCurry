@@ -34,6 +34,40 @@ usuarioDePublicacion (u, _, _) = u
 likesDePublicacion :: Publicacion -> [Usuario]
 likesDePublicacion (_, _, us) = us
 
+-- Predicados
+
+pertenece :: (Eq t) => t -> [t] -> Bool
+pertenece _ [] = False
+pertenece e (x:xs) = e == x || pertenece e xs
+
+mismosElementos :: (Eq t) => [t] -> [t] -> Bool
+mismosElementos l1 l2 = perteneceL1 l1 l2 && perteneceL2 l1 l2
+    where perteneceL1 [] _ = True
+          perteneceL1 (x:xs) ys = pertenece x ys && perteneceL1 xs ys
+          perteneceL2 _ [] = True
+          perteneceL2 xs (y:ys) = pertenece y xs && perteneceL2 xs ys
+
+cadenaDeAmigos :: [Usuario] -> RedSocial -> Bool
+cadenaDeAmigos [] _ = True
+cadenaDeAmigos [u] _ = True
+cadenaDeAmigos (u1:u2:us) red = relacionadosDirecto u1 u2 red && cadenaDeAmigos (u2:us) red
+    where relacionadosDirecto u1 u2 red = pertenece (u1,u2) (relaciones red) || pertenece (u2,u1) (relaciones red)
+
+sonDeLaRed :: RedSocial -> [Usuario] -> Bool
+sonDeLaRed _ [] = True
+sonDeLaRed red (u:us) = pertenece u (usuarios red) && sonDeLaRed red us 
+
+empiezaCon :: (Eq t) => t -> [t] -> Bool
+empiezaCon e l = head l == e
+
+terminaCon :: (Eq t) => t -> [t] -> Bool
+terminaCon e l = last l == e
+
+sinRepetidos :: (Eq t) => [t] -> Bool
+sinRepetidos [] = True
+sinRepetidos [x] = True
+sinRepetidos (x:y:ys) = x /= y && sinRepetidos (y:ys)
+
 -- Ejercicios
 
 nombresDeUsuarios :: RedSocial -> [String]
