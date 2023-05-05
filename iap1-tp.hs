@@ -93,11 +93,15 @@ usuarioConMasAmigos red = comparaCantidadDeAmigosDeUsuarios red (usuarios red) (
 estaRobertoCarlos :: RedSocial -> Bool
 estaRobertoCarlos red = verificaCantidadDeAmigosDeUsuarios red (usuarios red)
     where verificaCantidadDeAmigosDeUsuarios _ [] = False
-          verificaCantidadDeAmigosDeUsuarios red us = cantidadDeAmigos red (head us) > 1000000 || verificaCantidadDeAmigosDeUsuarios red (tail us)
+          verificaCantidadDeAmigosDeUsuarios red (u:us) = cantidadDeAmigos red u > 1000000 || verificaCantidadDeAmigosDeUsuarios red us
 
 -- Devuelve las publicaciones de un usuario
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
-publicacionesDe = undefined
+publicacionesDe red u = publicacionesDeUsuario (publicaciones red) u
+    where publicacionesDeUsuario [] _ = []
+          publicacionesDeUsuario (pub:pubs) u
+            | usuarioDePublicacion pub == u = pub:(publicacionesDeUsuario pubs u)
+            | otherwise = publicacionesDeUsuario pubs u
 
 -- describir qué hace la función: .....
 publicacionesQueLeGustanA :: RedSocial -> Usuario -> [Publicacion]
