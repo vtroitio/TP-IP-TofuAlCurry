@@ -2,7 +2,7 @@
 --
 -- Nombre de Grupo: TofuAlCurry
 -- Integrante 1: Valentin Troitiño, valiktroi16@gmail.com, 709/23
--- Integrante 2: Nombre Apellido, email, LU
+-- Integrante 2: Josefina Negrotto, josefinanegrotto@gmail.com, 545/23
 -- Integrante 3: Nombre Apellido, email, LU
 -- Integrante 4: Nombre Apellido, email, LU
 
