@@ -44,7 +44,7 @@ pertenece e (x:xs) = e == x || pertenece e xs
 
 -- Dadas dos listas determina si tienen los mismos elementos o no
 mismosElementos :: (Eq t) => [t] -> [t] -> Bool
-mismosElementos2 l1 l2 = listaIncluida l1 l2 && listaIncluida l2 l1
+mismosElementos l1 l2 = listaIncluida l1 l2 && listaIncluida l2 l1
     where
         listaIncluida [] _ = True
         listaIncluida (x:xs) ys = pertenece x ys && listaIncluida xs (quitarPrimeraAparicion x ys)
@@ -73,10 +73,12 @@ empiezaCon e l = head l == e
 terminaCon :: (Eq t) => t -> [t] -> Bool
 terminaCon e l = last l == e
 
+-- Dada una lista determina si tiene repeticiones o no
 sinRepetidos :: (Eq t) => [t] -> Bool
 sinRepetidos [] = True
-sinRepetidos [x] = True
-sinRepetidos (x:y:ys) = x /= y && sinRepetidos (y:ys)
+sinRepetidos (x:xs)
+    | not (pertenece x xs)  = sinRepetidos xs
+    | otherwise             = False
 
 -- Ejercicios
 
