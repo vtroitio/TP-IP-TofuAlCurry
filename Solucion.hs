@@ -41,12 +41,21 @@ pertenece :: (Eq t) => t -> [t] -> Bool
 pertenece _ [] = False
 pertenece e (x:xs) = e == x || pertenece e xs
 
+
+-- Dadas dos listas determina si tienen los mismos elementos o no
 mismosElementos :: (Eq t) => [t] -> [t] -> Bool
-mismosElementos l1 l2 = perteneceL1 l1 l2 && perteneceL2 l1 l2
-    where perteneceL1 [] _ = True
-          perteneceL1 (x:xs) ys = pertenece x ys && perteneceL1 xs ys
-          perteneceL2 _ [] = True
-          perteneceL2 xs (y:ys) = pertenece y xs && perteneceL2 xs ys
+mismosElementos2 l1 l2 = listaIncluida l1 l2 && listaIncluida l2 l1
+    where
+        listaIncluida [] _ = True
+        listaIncluida (x:xs) ys = pertenece x ys && listaIncluida xs (quitarPrimeraAparicion x ys)
+
+-- Dada una lista y un elemento, devuelve la lista sin la primera aparicion de dicho elemento
+quitarPrimeraAparicion :: (Eq t) => t -> [t] -> [t]
+quitarPrimeraAparicion _ [] = []
+quitarPrimeraAparicion e (x:xs)
+    | e == x        = xs
+    | otherwise     = (x:quitarPrimeraAparicion e xs)
+
 
 cadenaDeAmigos :: [Usuario] -> RedSocial -> Bool
 cadenaDeAmigos [] _ = True
@@ -71,7 +80,7 @@ sinRepetidos (x:y:ys) = x /= y && sinRepetidos (y:ys)
 
 -- Ejercicios
 
--- Devuelve una lista de los nombres de los usuarios de una red, sin nombres repetidos
+-- Dada una red social, devuelve una linsta de nombres de usuarios sin repetidos
 nombresDeUsuarios :: RedSocial -> [String]
 nombresDeUsuarios red = proyectarNombres( usuarios red)
 

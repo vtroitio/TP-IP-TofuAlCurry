@@ -2,14 +2,15 @@ import Test.HUnit
 import Solucion
 
 main = do
-    print("Test suite: nombresDeUsuarios")
+    putStrLn("Test suite: nombresDeUsuarios")
     runTestTT todosLosTest
+    --putStrLn("")
 
 todosLosTest = test [
-    testsuite_nombresDeUsuarios
+    testsuiteNombresDeUsuarios
     ]
 
-testsuite_nombresDeUsuarios = test [
+testsuiteNombresDeUsuarios = test [
     " nombresDeUsuarios 1" ~: (nombresDeUsuarios redB) ~?= ["Juan","Natalia","Pedro"] -- Ejemplo catedra
     ]
 
