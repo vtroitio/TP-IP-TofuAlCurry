@@ -1,9 +1,10 @@
+module Solucion where
 -- Completar con los datos del grupo
 --
 -- Nombre de Grupo: TofuAlCurry
 -- Integrante 1: Valentin Troitiño, valiktroi16@gmail.com, 709/23
 -- Integrante 2: Josefina Negrotto, josefinanegrotto@gmail.com, 545/23
--- Integrante 3: Nombre Apellido, email, LU
+-- Integrante 3: Facundo Chenlo, 45421244, 335/23
 -- Integrante 4: Nombre Apellido, email, LU
 
 type Usuario = (Integer, String) -- (id, nombre)
@@ -70,8 +71,18 @@ sinRepetidos (x:y:ys) = x /= y && sinRepetidos (y:ys)
 
 -- Ejercicios
 
+-- Devuelve una lista de los nombres de los usuarios de una red, sin nombres repetidos
 nombresDeUsuarios :: RedSocial -> [String]
-nombresDeUsuarios = undefined
+nombresDeUsuarios red = proyectarNombres( usuarios red)
+
+-- Dada una lista de usuarios devuelve sus nombres, sin repeticiones
+proyectarNombres :: [Usuario] -> [String]
+proyectarNombres []  = []
+proyectarNombres [u] = [nombreDeUsuario u]
+proyectarNombres (u:us)
+    | not (pertenece nombre (proyectarNombres us)) = (nombre: proyectarNombres us)
+    | otherwise            = proyectarNombres us
+    where nombre = nombreDeUsuario u
 
 -- describir qué hace la función: .....
 amigosDe :: RedSocial -> Usuario -> [Usuario]
