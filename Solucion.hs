@@ -84,16 +84,18 @@ sinRepetidos (x:xs)
 
 -- Dada una red social, devuelve una linsta de nombres de usuarios sin repetidos
 nombresDeUsuarios :: RedSocial -> [String]
-nombresDeUsuarios red = proyectarNombres( usuarios red)
+nombresDeUsuarios red = proyectarNombres (usuarios red)
 
 -- Dada una lista de usuarios devuelve sus nombres, sin repeticiones
 proyectarNombres :: [Usuario] -> [String]
 proyectarNombres []  = []
 proyectarNombres [u] = [nombreDeUsuario u]
 proyectarNombres (u:us)
-    | not (pertenece nombre (proyectarNombres us)) = (nombre: proyectarNombres us)
+    | not (pertenece nombre (proyectarNombres us)) = (nombre: proyectarNombres us) -- * Si se repiten, solo agrega la ultima aparicion del nombre
     | otherwise            = proyectarNombres us
     where nombre = nombreDeUsuario u
+-- * Por eso el orden de los nombres que devuelve no es el mismo en el que aparecen los usuarios
+-- De todas formas, eso no importa segun la especificacion.
 
 -- describir qué hace la función: .....
 amigosDe :: RedSocial -> Usuario -> [Usuario]
