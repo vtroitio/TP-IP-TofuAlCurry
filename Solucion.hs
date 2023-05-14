@@ -134,7 +134,7 @@ usuarioConMasAmigos red = comparaCantidadDeAmigosDeUsuarios red (usuarios red) (
 estaRobertoCarlos :: RedSocial -> Bool
 estaRobertoCarlos red = verificaCantidadDeAmigosDeUsuarios red (usuarios red)
     where verificaCantidadDeAmigosDeUsuarios _ [] = False
-          verificaCantidadDeAmigosDeUsuarios red (u:us) = cantidadDeAmigos red u > 1000000 || verificaCantidadDeAmigosDeUsuarios red us
+          verificaCantidadDeAmigosDeUsuarios red (u:us) = cantidadDeAmigos red u > 10 || verificaCantidadDeAmigosDeUsuarios red us
 
 -- Devuelve las publicaciones de un usuario
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
