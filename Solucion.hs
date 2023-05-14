@@ -37,6 +37,7 @@ likesDePublicacion (_, _, us) = us
 
 -- Predicados
 
+-- Dado un elemento y una lista, determina si ese elemento pertenece a la lista o no
 pertenece :: (Eq t) => t -> [t] -> Bool
 pertenece _ [] = False
 pertenece e (x:xs) = e == x || pertenece e xs
@@ -80,9 +81,15 @@ sinRepetidos (x:xs)
     | not (pertenece x xs)  = sinRepetidos xs
     | otherwise             = False
 
+-- Auxiliares genericas
+longitud :: [t] -> Int
+longitud [] = 0
+longitud (_:xs) = 1 + longitud xs
+
 -- Ejercicios
 
--- Dada una red social, devuelve una linsta de nombres de usuarios sin repetidos
+-- Ejercicio 1
+-- Dada una red social, devuelve una lista de nombres de usuarios sin repetidos
 nombresDeUsuarios :: RedSocial -> [String]
 nombresDeUsuarios red = proyectarNombres (usuarios red)
 
@@ -97,13 +104,23 @@ proyectarNombres (u:us)
 -- * Por eso el orden de los nombres que devuelve no es el mismo en el que aparecen los usuarios
 -- De todas formas, eso no importa segun la especificacion.
 
--- describir qué hace la función: .....
+
+-- Ejercicio 2
+-- Dada una red y un usuario, devuelve una lista de usuarios que son amigos del usuario de entrada en esa red.
+-- Dicha lista de salida no tiene repetidos
 amigosDe :: RedSocial -> Usuario -> [Usuario]
-amigosDe = undefined
+amigosDe red u = amigosDe_relaciones  (relaciones red) u
+
+amigosDe_relaciones :: [Relacion] -> Usuario -> [Usuario]
+amigosDe_relaciones [] _ = []
+amigosDe_relaciones (rel:rels) u
+    | u == fst rel  = (snd rel : amigosDe_relaciones rels u)
+    | u == snd rel  = (fst rel : amigosDe_relaciones rels u)
+    | otherwise     = amigosDe_relaciones rels u
 
 -- describir qué hace la función: .....
 cantidadDeAmigos :: RedSocial -> Usuario -> Int
-cantidadDeAmigos = undefined
+cantidadDeAmigos red u = longitud (amigosDe red u)
 
 -- Compara la cantidad de amigos de todos los usuarios en la red social y devuelve el que tiene más amigos
 usuarioConMasAmigos :: RedSocial -> Usuario

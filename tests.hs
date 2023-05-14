@@ -1,9 +1,11 @@
 import Test.HUnit
 import Solucion
 
-main = do
+main = runTestTT todosLosTest
+
+mainConTitulos = do
     putStrLn("Test suite: nombresDeUsuarios")
-    runTestTT todosLosTest
+    runTestTT testsuiteNombresDeUsuarios
     --putStrLn("")
 
 todosLosTest = test [
@@ -37,14 +39,14 @@ usuario7 = (7, "Xx_CerealKiller_xX")
 usuario8 = (8, "Cumbio")
 usuario9 = (9, "Mati_capo_49")
 
-relacionesNombresDeUsuarios   = []
-publicacionesNombresDeUsuarios = []
+relacionesVacia   = []
+publicacionesVacia = []
 
 usuariosVacia = []
-redUsuariosVacia = (usuariosVacia, relacionesNombresDeUsuarios, publicacionesNombresDeUsuarios)
+redUsuariosVacia = (usuariosVacia, relacionesVacia, publicacionesVacia)
 
 usuariosSinNombresRepetidos = [usuario1, usuario2, usuario3, usuario4, usuario5]
-redUsuariosSinNombresRepetidos = (usuariosSinNombresRepetidos, relacionesNombresDeUsuarios, publicacionesNombresDeUsuarios)
+redUsuariosSinNombresRepetidos = (usuariosSinNombresRepetidos, relacionesVacia, publicacionesVacia)
 
 usuariosConNombresRepetidos = [usuario9, usuario8, usuario4, usuario3, usuario5, usuario6]
-redUsuariosConNombresRepetidos = (usuariosConNombresRepetidos, relacionesNombresDeUsuarios, publicacionesNombresDeUsuarios)
+redUsuariosConNombresRepetidos = (usuariosConNombresRepetidos, relacionesVacia, publicacionesVacia)
