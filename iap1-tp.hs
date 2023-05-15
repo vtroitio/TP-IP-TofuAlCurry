@@ -1,5 +1,3 @@
--- Completar con los datos del grupo
---
 -- Nombre de Grupo: TofuAlCurry
 -- Integrante 1: Valentin Troitiño, valiktroi16@gmail.com, 709/23
 -- Integrante 2: Nombre Apellido, email, LU
@@ -23,10 +21,10 @@ publicaciones :: RedSocial -> [Publicacion]
 publicaciones (_, _, ps) = ps
 
 idDeUsuario :: Usuario -> Integer
-idDeUsuario (id, _) = id 
+idDeUsuario (id, _) = id
 
 nombreDeUsuario :: Usuario -> String
-nombreDeUsuario (_, nombre) = nombre 
+nombreDeUsuario (_, nombre) = nombre
 
 usuarioDePublicacion :: Publicacion -> Usuario
 usuarioDePublicacion (u, _, _) = u
@@ -55,7 +53,7 @@ cadenaDeAmigos (u1:u2:us) red = relacionadosDirecto u1 u2 red && cadenaDeAmigos 
 
 sonDeLaRed :: RedSocial -> [Usuario] -> Bool
 sonDeLaRed _ [] = True
-sonDeLaRed red (u:us) = pertenece u (usuarios red) && sonDeLaRed red us 
+sonDeLaRed red (u:us) = pertenece u (usuarios red) && sonDeLaRed red us
 
 empiezaCon :: (Eq t) => t -> [t] -> Bool
 empiezaCon e l = head l == e
@@ -111,9 +109,16 @@ publicacionesQueLeGustanA = undefined
 lesGustanLasMismasPublicaciones :: RedSocial -> Usuario -> Usuario -> Bool
 lesGustanLasMismasPublicaciones = undefined
 
--- describir qué hace la función: .....
+-- Verifica que el usuario a evaluar tenga likes de un usuario distinto en todas sus publicaciones
 tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
-tieneUnSeguidorFiel = undefined
+tieneUnSeguidorFiel red u = verificaSeguidorFiel (publicacionesDe red u) (publicacionesDe red u) (usuarios red)
+    where verificaSeguidorFiel [] _ _ = False
+          verificaSeguidorFiel _ [] _ = True
+          verificaSeguidorFiel _ _ [] = False
+          verificaSeguidorFiel pubsTotales (pub:pubs) (u:us)
+            | usuarioDePublicacion pub == u = verificaSeguidorFiel pubsTotales pubsTotales us
+            | pertenece u (likesDePublicacion pub) == True = verificaSeguidorFiel pubsTotales pubs (u:us)
+            | otherwise = verificaSeguidorFiel pubsTotales pubsTotales us
 
 -- describir qué hace la función: .....
 existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
