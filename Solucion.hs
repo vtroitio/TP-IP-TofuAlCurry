@@ -1,8 +1,10 @@
 -- Nombre de Grupo: TofuAlCurry
 -- Integrante 1: Valentin Troitiño, valiktroi16@gmail.com, 709/23
--- Integrante 2: Nombre Apellido, email, LU
--- Integrante 3: Nombre Apellido, email, LU
--- Integrante 4: Nombre Apellido, email, LU
+-- Integrante 2: Josefina Negrotto, josefinanegrotto@gmail.com, 545/23
+-- Integrante 3: Facundo Chenlo, 45421244, 335/23
+-- Integrante 4: Tobias Oshiro, tobiasoshiro@gmail.com, 
+
+module Solucion where
 
 type Usuario = (Integer, String) -- (id, nombre)
 type Relacion = (Usuario, Usuario) -- usuarios que se relacionan
@@ -34,16 +36,26 @@ likesDePublicacion (_, _, us) = us
 
 -- Predicados
 
+-- Dado un elemento y una lista, determina si ese elemento pertenece a la lista o no
 pertenece :: (Eq t) => t -> [t] -> Bool
 pertenece _ [] = False
 pertenece e (x:xs) = e == x || pertenece e xs
 
+
+-- Dadas dos listas determina si tienen los mismos elementos o no
 mismosElementos :: (Eq t) => [t] -> [t] -> Bool
-mismosElementos l1 l2 = perteneceL1 l1 l2 && perteneceL2 l1 l2
-    where perteneceL1 [] _ = True
-          perteneceL1 (x:xs) ys = pertenece x ys && perteneceL1 xs ys
-          perteneceL2 _ [] = True
-          perteneceL2 xs (y:ys) = pertenece y xs && perteneceL2 xs ys
+mismosElementos l1 l2 = listaIncluida l1 l2 && listaIncluida l2 l1
+    where
+        listaIncluida [] _ = True
+        listaIncluida (x:xs) ys = pertenece x ys && listaIncluida xs (quitarPrimeraAparicion x ys)
+
+-- Dada una lista y un elemento, devuelve la lista sin la primera aparicion de dicho elemento
+quitarPrimeraAparicion :: (Eq t) => t -> [t] -> [t]
+quitarPrimeraAparicion _ [] = []
+quitarPrimeraAparicion e (x:xs)
+    | e == x        = xs
+    | otherwise     = (x:quitarPrimeraAparicion e xs)
+
 
 cadenaDeAmigos :: [Usuario] -> RedSocial -> Bool
 cadenaDeAmigos [] _ = True
@@ -61,23 +73,53 @@ empiezaCon e l = head l == e
 terminaCon :: (Eq t) => t -> [t] -> Bool
 terminaCon e l = last l == e
 
+-- Dada una lista determina si tiene repeticiones o no
 sinRepetidos :: (Eq t) => [t] -> Bool
 sinRepetidos [] = True
-sinRepetidos [x] = True
-sinRepetidos (x:y:ys) = x /= y && sinRepetidos (y:ys)
+sinRepetidos (x:xs)
+    | not (pertenece x xs)  = sinRepetidos xs
+    | otherwise             = False
+
+-- Auxiliares genericas
+longitud :: [t] -> Int
+longitud [] = 0
+longitud (_:xs) = 1 + longitud xs
 
 -- Ejercicios
 
+-- Ejercicio 1
+-- Dada una red social, devuelve una lista de nombres de usuarios sin repetidos
 nombresDeUsuarios :: RedSocial -> [String]
-nombresDeUsuarios = undefined
+nombresDeUsuarios red = proyectarNombres (usuarios red)
 
--- describir qué hace la función: .....
+-- Dada una lista de usuarios devuelve sus nombres, sin repeticiones
+proyectarNombres :: [Usuario] -> [String]
+proyectarNombres []  = []
+proyectarNombres [u] = [nombreDeUsuario u]
+proyectarNombres (u:us)
+    | not (pertenece nombre (proyectarNombres us)) = (nombre: proyectarNombres us) -- * Si se repiten, solo agrega la ultima aparicion del nombre
+    | otherwise            = proyectarNombres us
+    where nombre = nombreDeUsuario u
+-- * Por eso el orden de los nombres que devuelve no es el mismo en el que aparecen los usuarios
+-- De todas formas, eso no importa segun la especificacion.
+
+
+-- Ejercicio 2
+-- Dada una red y un usuario, devuelve una lista de usuarios que son amigos del usuario de entrada en esa red.
+-- Dicha lista de salida no tiene repetidos
 amigosDe :: RedSocial -> Usuario -> [Usuario]
-amigosDe = undefined
+amigosDe red u = amigosDe_relaciones  (relaciones red) u
+
+amigosDe_relaciones :: [Relacion] -> Usuario -> [Usuario]
+amigosDe_relaciones [] _ = []
+amigosDe_relaciones (rel:rels) u
+    | u == fst rel  = (snd rel : amigosDe_relaciones rels u)
+    | u == snd rel  = (fst rel : amigosDe_relaciones rels u)
+    | otherwise     = amigosDe_relaciones rels u
 
 -- describir qué hace la función: .....
 cantidadDeAmigos :: RedSocial -> Usuario -> Int
-cantidadDeAmigos = undefined
+cantidadDeAmigos red u = longitud (amigosDe red u)
 
 -- Compara la cantidad de amigos de todos los usuarios en la red social y devuelve el que tiene más amigos
 usuarioConMasAmigos :: RedSocial -> Usuario
@@ -91,7 +133,7 @@ usuarioConMasAmigos red = comparaCantidadDeAmigosDeUsuarios red (usuarios red) (
 estaRobertoCarlos :: RedSocial -> Bool
 estaRobertoCarlos red = verificaCantidadDeAmigosDeUsuarios red (usuarios red)
     where verificaCantidadDeAmigosDeUsuarios _ [] = False
-          verificaCantidadDeAmigosDeUsuarios red (u:us) = cantidadDeAmigos red u > 1000000 || verificaCantidadDeAmigosDeUsuarios red us
+          verificaCantidadDeAmigosDeUsuarios red (u:us) = cantidadDeAmigos red u > 10 || verificaCantidadDeAmigosDeUsuarios red us
 
 -- Devuelve las publicaciones de un usuario
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
