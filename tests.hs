@@ -3,6 +3,12 @@ import Solucion
 
 main = runTestTT todosLosTest
 
+-- Cuando nosotros corriamos los casos de test notamos que era
+-- mas claro si  lo haciamos de  esta forma asi ya veiamos que
+-- funcion en particular era la que tenia problemas.
+-- Decidimos poner en los  casos como "Caso n: descripcion" ya
+-- que nos parecia que poner "nombreDeLaFuncion n: descripcion"
+-- se volveria muy engorroso de leer.
 mainConTitulos = do
     -- Ej 1
     putStrLn("Test suite: nombresDeUsuarios")
@@ -31,8 +37,9 @@ mainConTitulos = do
 
 todosLosTest = test [
     testsuiteNombresDeUsuarios,
-    testsuiteUsuarioConMasAmigos,
-    testsuiteEstaRobertoCarlos
+    testsuiteUstuarioConMasAmigos,
+    testsuiteEstaRobertoCarlos,
+    testsuiteTieneUnSeguidorFiel
     ]
 
 -- Aclaracion: testsuiteNombresDeUsuarios
@@ -43,15 +50,26 @@ todosLosTest = test [
 -- posibles casos  vamos a descartarlos, pasando siempre los  mismos
 -- valores para dichos parametros.
 -- Aclaracion general:
--- Esa va a ser la forma de encarar todos los casos de  test para las
+-- Esa va a ser la forma de encarar todos los casos de test para las
 -- funciones que se comporten de forma similar para todo el TP.
 
 testsuiteNombresDeUsuarios = test [
     "Caso 1: Lista de usuarios vacia" ~: (nombresDeUsuarios redUsuariosVacia) ~?= [],
-    "Caso 2: Lista de usuarios sin nombres repetidos" ~: (nombresDeUsuarios redUsuariosSinNombresRepetidos) ~?= ["Facu", "Jose", "Valen", "Tobi", "Cumbio"],
-     -- Aca medio que el test case esta "elegido a mano" porque no sabiamos como poner todas las permutaciones sin usar Data.List
-    "Caso 3: Lista de usuarios con nombres repetidos" ~: (nombresDeUsuarios redUsuariosConNombresRepetidos) ~?= ["Tobi","Valen", "Cumbio", "Mati_capo_49"]
+    "Caso 2.1: Lista de usuarios sin nombres repetidos" ~: (nombresDeUsuarios redUsuariosSinNombresRepetidos) ~?= ["Facu", "Jose", "Valen", "Tobi", "Cumbio"],
+    "Caso 2.2: Lista de usuarios sin nombres repetidos" ~: (mismosElementos (nombresDeUsuarios redUsuariosSinNombresRepetidos) ["Jose", "Facu", "Valen", "Cumbio", "Tobi"] )~?= True,
+    "Caso 3.1: Lista de usuarios con nombres repetidos" ~: (nombresDeUsuarios redUsuariosConNombresRepetidos) ~?= ["Tobi","Valen", "Cumbio", "Mati_capo_49"],
+    "Caso 3.2: Lista de usuarios con nombres repetidos" ~: (mismosElementos (nombresDeUsuarios redUsuariosConNombresRepetidos) ["Tobi", "Mati_capo_49", "Valen", "Cumbio"]) ~?= True
     ]
+-- Para la funcion nombresDeUsuarios notamos que mas de un resultado
+-- podia ser correcto. Esto se debe a  que cualquier permutacion  de
+-- una lista que contenga todos los nombres de usuario, sin repetir,
+-- era correcta. Esto se puede  implementar en el  testeo usando  la
+-- funcion expectAny(en el archivo de la catedra)  y alguna  funcion
+-- que  devuelva todas  las permutaciones  posibles de  los  nombres
+-- correctos,  por  ejemplo permutations  de Data.List.  Esto no  lo
+-- implementamos debido a que no se podian meter librerias nuevas.
+-- Lo que si hicimos fue comparar si la lista de la funcion y la que
+-- se esperaba(en otro orden) tenian los mismos elementos.
 
 -- Para estos casos de test las publicaciones no son importantes
 testsuiteUsuarioConMasAmigos = test [
