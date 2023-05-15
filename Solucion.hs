@@ -1,7 +1,7 @@
 -- Nombre de Grupo: TofuAlCurry
 -- Integrante 1: Valentin Troitiño, valiktroi16@gmail.com, 709/23
 -- Integrante 2: Josefina Negrotto, josefinanegrotto@gmail.com, 545/23
--- Integrante 3: Facundo Chenlo, 45421244, 335/23
+-- Integrante 3: Facundo Chenlo, chenlofacundo@gmail.com, 335/23
 -- Integrante 4: Tobias Oshiro, tobiasoshiro@gmail.com, 
 
 module Solucion where

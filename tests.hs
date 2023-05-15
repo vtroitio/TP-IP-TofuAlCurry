@@ -4,22 +4,30 @@ import Solucion
 main = runTestTT todosLosTest
 
 mainConTitulos = do
+    -- Ej 1
     putStrLn("Test suite: nombresDeUsuarios")
     runTestTT testsuiteNombresDeUsuarios
     putStrLn("")
 
+    -- Ej 4
     putStrLn("Test suite: usuarioConMasAmigos")
     runTestTT testsuiteUsuarioConMasAmigos
     putStrLn("")
 
+    -- Ej 5
     putStrLn("Test suite: estaRobertoCarlos")
     runTestTT testsuiteEstaRobertoCarlos
     putStrLn("")
 
+    -- Ej 6
     putStrLn("Test suite: publicacionesDe")
     runTestTT testsuitePublicacionesDe
     putStrLn("")
     
+    -- Ej 9
+    putStrLn("Test suite: tieneUnSeguidorFiel")
+    runTestTT testsuiteTieneUnSeguidorFiel
+    putStrLn("")
 
 todosLosTest = test [
     testsuiteNombresDeUsuarios,
@@ -67,8 +75,18 @@ testsuiteEstaRobertoCarlos = test [
 testsuitePublicacionesDe = test [
     "Caso 1: Red sin publicaciones" ~: (publicacionesDe redSinPublicaciones usuario2) ~?= [],
     "Caso 2: Usuario sin publicaciones" ~: (publicacionesDe redConPublicaciones usuario2) ~?= [],
-    "Caso 3.1: Usuario con publicaciones" ~: (publicacionesDe redConPublicaciones usuario12) ~?= [publicacion12_1, publicacion12_2, publicacion12_3, publicacion12_4, publicacion12_5],
-    "Caso 3.2: Usuario con publicaciones" ~: (publicacionesDe redConPublicaciones usuario8) ~?= [publicacion8_1, publicacion8_2]
+    "Caso 3.1: Usuario con publicaciones" ~: (publicacionesDe redConPublicaciones usuario12) ~?= [publicacion12_1, publicacion12_2, publicacion12_3, publicacion12_4, publicacion12_5]
+    -- Poner dos casos igual de representativos no es necesario, capaz si es un testeo mas intenso si.
+    --"Caso 3.2: Usuario con publicaciones" ~: (publicacionesDe redConPublicaciones usuario8) ~?= [publicacion8_1, publicacion8_2]
+    ]
+
+-- Para estos casos de test las relaciones no son importantes
+testsuiteTieneUnSeguidorFiel = test [
+    "Caso 1: Red sin publicaciones" ~: (tieneUnSeguidorFiel redSinPublicaciones usuario6) ~?= False,
+    "Caso 2: Usuario sin publicaciones" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario1) ~?= False,
+    "Caso 3: Publicaciones de usuario sin likes" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario2) ~?= False,
+    "Caso 4: Publicaciones de usuario con likes (sin fiel)" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario8) ~?= False,
+    "Caso 5: Publicaciones de usuario con likes (con fiel)" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario12) ~?= True
     ]
 
 -- No sabemos si podemos usar esto o no
@@ -164,3 +182,11 @@ publicaciones_8_12 = [publicacion8_1, publicacion8_2, publicacion12_1, publicaci
 
 redConPublicaciones = (todosLosUsuarios, relacionesVacia, publicaciones_8_12)
 redSinPublicaciones = (todosLosUsuarios, relacionesVacia, publicacionesVacia)
+
+-- Para el test de tieneUnSeguidorFiel
+
+publicacion2_1 = (usuario2, "Como ojos", [])
+publicacion2_2 = (usuario2, "Mick Jones tiene frio por los ojos", [])
+
+publicaciones_seguidorFiel = [publicacion2_1, publicacion2_2] ++ publicaciones_8_12
+redSeguidorFiel = (todosLosUsuarios, relacionesVacia, publicaciones_seguidorFiel)
