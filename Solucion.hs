@@ -1,7 +1,7 @@
 -- Nombre de Grupo: TofuAlCurry
 -- Integrante 1: Valentin Troitiño, valiktroi16@gmail.com, 709/23
 -- Integrante 2: Josefina Negrotto, josefinanegrotto@gmail.com, 545/23
--- Integrante 3: Facundo Chenlo, chenlofacundo@gmail.com, 335/23
+ --Integrante 3: Facundo Chenlo, chenlofacundo@gmail.com, 335/23
 -- Integrante 4: Tobias Oshiro, tobiasoshiro@gmail.com, 
 
 module Solucion where
@@ -117,10 +117,12 @@ amigosDe_relaciones (rel:rels) u
     | u == snd rel  = (fst rel : amigosDe_relaciones rels u)
     | otherwise     = amigosDe_relaciones rels u
 
+--Ejercicio 3
 -- describir qué hace la función: .....
 cantidadDeAmigos :: RedSocial -> Usuario -> Int
 cantidadDeAmigos red u = longitud (amigosDe red u)
 
+--Ejercicio 4
 -- Compara la cantidad de amigos de todos los usuarios en la red social y devuelve el que tiene más amigos
 usuarioConMasAmigos :: RedSocial -> Usuario
 usuarioConMasAmigos red = comparaCantidadDeAmigosDeUsuarios red (usuarios red) (head (usuarios red))
@@ -129,12 +131,14 @@ usuarioConMasAmigos red = comparaCantidadDeAmigosDeUsuarios red (usuarios red) (
             | cantidadDeAmigos red (head us) <= cantidadDeAmigos red u = comparaCantidadDeAmigosDeUsuarios red (tail us) u
             | otherwise = comparaCantidadDeAmigosDeUsuarios red (tail us) (head us)
 
+--Ejercicio 5
 -- Verifica si hay algún usuario en la red social con más de 1.000.000 de amigos
 estaRobertoCarlos :: RedSocial -> Bool
 estaRobertoCarlos red = verificaCantidadDeAmigosDeUsuarios red (usuarios red)
     where verificaCantidadDeAmigosDeUsuarios _ [] = False
           verificaCantidadDeAmigosDeUsuarios red (u:us) = cantidadDeAmigos red u > 10 || verificaCantidadDeAmigosDeUsuarios red us
 
+--Ejercicio 6
 -- Devuelve las publicaciones de un usuario
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
 publicacionesDe red u = publicacionesDeUsuario (publicaciones red) u
@@ -143,14 +147,21 @@ publicacionesDe red u = publicacionesDeUsuario (publicaciones red) u
             | usuarioDePublicacion pub == u = pub:(publicacionesDeUsuario pubs u)
             | otherwise = publicacionesDeUsuario pubs u
 
+--Ejercicio 7
 -- describir qué hace la función: .....
 publicacionesQueLeGustanA :: RedSocial -> Usuario -> [Publicacion]
-publicacionesQueLeGustanA = undefined
+publicacionesQueLeGustanA red u = verificaLikes (publicaciones red) u
+    where verificaLikes [] _ = []
+          verificaLikes (pub:pubs) u
+            | pertenece u (likesDePublicacion pub) = pub:verificaLikes pubs u
+            | otherwise = verificaLikes pubs u
 
+--Ejercicio 8
 -- describir qué hace la función: .....
 lesGustanLasMismasPublicaciones :: RedSocial -> Usuario -> Usuario -> Bool
 lesGustanLasMismasPublicaciones = undefined
 
+--Ejercicio 9
 -- Verifica que el usuario a evaluar tenga likes de un usuario distinto en todas sus publicaciones
 tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
 tieneUnSeguidorFiel red u = verificaSeguidorFiel (publicacionesDe red u) (publicacionesDe red u) (usuarios red)
@@ -162,6 +173,7 @@ tieneUnSeguidorFiel red u = verificaSeguidorFiel (publicacionesDe red u) (public
             | pertenece u (likesDePublicacion pub) == True = verificaSeguidorFiel pubsTotales pubs (u:us)
             | otherwise = verificaSeguidorFiel pubsTotales pubsTotales us
 
+--Ejercicio 10
 -- Verifica que (en caso que exitsa) la secuenciaDeAmigos encontrada sea de la Red y una cadenaDeAmigo
 existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
 existeSecuenciaDeAmigos ([],[],[]) _ _ = False
