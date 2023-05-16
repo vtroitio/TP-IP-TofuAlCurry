@@ -1,8 +1,8 @@
 -- Nombre de Grupo: TofuAlCurry
 -- Integrante 1: Valentin Troitiño, valiktroi16@gmail.com, 709/23
 -- Integrante 2: Josefina Negrotto, josefinanegrotto@gmail.com, 545/23
- --Integrante 3: Facundo Chenlo, chenlofacundo@gmail.com, 335/23
--- Integrante 4: Tobias Oshiro, tobiasoshiro@gmail.com, 
+-- Integrante 3: Facundo Chenlo, chenlofacundo@gmail.com, 335/23
+-- Integrante 4: Tobias Oshiro, tobiasoshiro@gmail.com, 852/23
 
 module Solucion where
 
@@ -41,7 +41,6 @@ pertenece :: (Eq t) => t -> [t] -> Bool
 pertenece _ [] = False
 pertenece e (x:xs) = e == x || pertenece e xs
 
-
 -- Dadas dos listas determina si tienen los mismos elementos o no
 mismosElementos :: (Eq t) => [t] -> [t] -> Bool
 mismosElementos l1 l2 = listaIncluida l1 l2 && listaIncluida l2 l1
@@ -49,21 +48,6 @@ mismosElementos l1 l2 = listaIncluida l1 l2 && listaIncluida l2 l1
 listaIncluida :: (Eq t) => [t] -> [t] -> Bool
 listaIncluida [] _ = True
 listaIncluida (x:xs) ys = pertenece x ys && listaIncluida xs (quitarPrimeraAparicion x ys)
-
-intersecarListas :: (Eq t) => [t] -> [t] -> [t]
-intersecarListas _ [] = []
-intersecarListas [] _ = []
-intersecarListas (x:xs) ys
-    | pertenece x ys = x : intersecarListas xs (quitarPrimeraAparicion x ys)
-    | otherwise      = intersecarListas xs ys
-
--- Dada una lista y un elemento, devuelve la lista sin la primera aparicion de dicho elemento
-quitarPrimeraAparicion :: (Eq t) => t -> [t] -> [t]
-quitarPrimeraAparicion _ [] = []
-quitarPrimeraAparicion e (x:xs)
-    | e == x        = xs
-    | otherwise     = (x:quitarPrimeraAparicion e xs)
-
 
 cadenaDeAmigos :: [Usuario] -> RedSocial -> Bool
 cadenaDeAmigos [] _ = True
@@ -93,6 +77,20 @@ longitud :: [t] -> Int
 longitud [] = 0
 longitud (_:xs) = 1 + longitud xs
 
+intersecarListas :: (Eq t) => [t] -> [t] -> [t]
+intersecarListas _ [] = []
+intersecarListas [] _ = []
+intersecarListas (x:xs) ys
+    | pertenece x ys = x : intersecarListas xs (quitarPrimeraAparicion x ys)
+    | otherwise      = intersecarListas xs ys
+
+-- Dada una lista y un elemento, devuelve la lista sin la primera aparicion de dicho elemento
+quitarPrimeraAparicion :: (Eq t) => t -> [t] -> [t]
+quitarPrimeraAparicion _ [] = []
+quitarPrimeraAparicion e (x:xs)
+    | e == x        = xs
+    | otherwise     = (x:quitarPrimeraAparicion e xs)
+
 -- Ejercicios
 
 -- Ejercicio 1
@@ -111,7 +109,6 @@ proyectarNombres (u:us)
 -- * Por eso el orden de los nombres que devuelve no es el mismo en el que aparecen los usuarios
 -- De todas formas, eso no importa segun la especificacion.
 
-
 -- Ejercicio 2
 -- Dada una red y un usuario, devuelve una lista de usuarios que son amigos del usuario de entrada en esa red.
 -- Dicha lista de salida no tiene repetidos
@@ -125,55 +122,65 @@ amigosDe_relaciones (rel:rels) u
     | u == snd rel  = (fst rel : amigosDe_relaciones rels u)
     | otherwise     = amigosDe_relaciones rels u
 
---Ejercicio 3
+-- Ejercicio 3
 -- describir qué hace la función: .....
 cantidadDeAmigos :: RedSocial -> Usuario -> Int
 cantidadDeAmigos red u = longitud (amigosDe red u)
 
---Ejercicio 4
+-- Ejercicio 4
 -- Compara la cantidad de amigos de todos los usuarios en la red social y devuelve el que tiene más amigos
 usuarioConMasAmigos :: RedSocial -> Usuario
 usuarioConMasAmigos red = comparaCantidadDeAmigosDeUsuarios red (usuarios red) (head (usuarios red))
-    where comparaCantidadDeAmigosDeUsuarios _ [] u = u
+    where 
+          comparaCantidadDeAmigosDeUsuarios :: RedSocial -> [Usuario] -> Usuario -> Usuario
+          comparaCantidadDeAmigosDeUsuarios _ [] u = u
           comparaCantidadDeAmigosDeUsuarios red us u
             | cantidadDeAmigos red (head us) <= cantidadDeAmigos red u = comparaCantidadDeAmigosDeUsuarios red (tail us) u
             | otherwise = comparaCantidadDeAmigosDeUsuarios red (tail us) (head us)
 
---Ejercicio 5
+-- Ejercicio 5
 -- Verifica si hay algún usuario en la red social con más de 1.000.000 de amigos
 estaRobertoCarlos :: RedSocial -> Bool
 estaRobertoCarlos red = verificaCantidadDeAmigosDeUsuarios red (usuarios red)
-    where verificaCantidadDeAmigosDeUsuarios _ [] = False
+    where 
+          verificaCantidadDeAmigosDeUsuarios :: RedSocial -> [Usuario] -> Bool
+          verificaCantidadDeAmigosDeUsuarios _ [] = False
           verificaCantidadDeAmigosDeUsuarios red (u:us) = cantidadDeAmigos red u > 10 || verificaCantidadDeAmigosDeUsuarios red us
 
---Ejercicio 6
+-- Ejercicio 6
 -- Devuelve las publicaciones de un usuario
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
 publicacionesDe red u = publicacionesDeUsuario (publicaciones red) u
-    where publicacionesDeUsuario [] _ = []
+    where 
+          publicacionesDeUsuario :: [Publicacion] -> Usuario -> [Publicacion]
+          publicacionesDeUsuario [] _ = []
           publicacionesDeUsuario (pub:pubs) u
             | usuarioDePublicacion pub == u = pub:(publicacionesDeUsuario pubs u)
             | otherwise = publicacionesDeUsuario pubs u
 
---Ejercicio 7
--- describir qué hace la función: .....
+-- Ejercicio 7
+-- Devuelve todas las publicaciones que le gustan a un usuario
 publicacionesQueLeGustanA :: RedSocial -> Usuario -> [Publicacion]
-publicacionesQueLeGustanA red u = verificaLikes (publicaciones red) u -- verifica likes tiene nombre que pinta booleano
-    where verificaLikes [] _ = []
-          verificaLikes (pub:pubs) u
-            | pertenece u (likesDePublicacion pub) = pub:verificaLikes pubs u
-            | otherwise = verificaLikes pubs u
+publicacionesQueLeGustanA red u = publicacionesQueLeGustanAlUsuario (publicaciones red) u -- verifica likes tiene nombre que pinta booleano
+    where 
+          publicacionesQueLeGustanAlUsuario :: [Publicacion] -> Usuario -> [Publicacion]
+          publicacionesQueLeGustanAlUsuario [] _ = []
+          publicacionesQueLeGustanAlUsuario (pub:pubs) u
+            | pertenece u (likesDePublicacion pub) = pub:publicacionesQueLeGustanAlUsuario pubs u
+            | otherwise = publicacionesQueLeGustanAlUsuario pubs u
 
---Ejercicio 8
--- describir qué hace la función: .....
+-- Ejercicio 8
+-- Verifica si a dos usuarios le gustan las mismas publicaciones
 lesGustanLasMismasPublicaciones :: RedSocial -> Usuario -> Usuario -> Bool
 lesGustanLasMismasPublicaciones red u1 u2 = mismosElementos (publicacionesQueLeGustanA red u1) (publicacionesQueLeGustanA red u2)
 
---Ejercicio 9
--- Verifica que el usuario a evaluar tenga likes de un usuario distinto en todas sus publicaciones
+-- Ejercicio 9
+-- Verifica que el usuario a evaluar tenga likes de un mismo usuario (que no sea él) en todas sus publicaciones
 tieneUnSeguidorFiel3 :: RedSocial -> Usuario -> Bool
 tieneUnSeguidorFiel3 red u = verificaSeguidorFiel (publicacionesDe red u) (publicacionesDe red u) (usuarios red)
-    where verificaSeguidorFiel [] _ _ = False
+    where 
+          verificaSeguidorFiel :: [Publicacion] -> [Publicacion] -> [Usuario] -> Bool
+          verificaSeguidorFiel [] _ _ = False
           verificaSeguidorFiel _ [] _ = True
           verificaSeguidorFiel _ _ [] = False
           verificaSeguidorFiel pubsTotales (pub:pubs) (u:us)
@@ -206,7 +213,7 @@ tieneUnSeguidorFiel red u = seguidorFielAux red (usuarios red) (publicacionesDe 
             | otherwise = seguidorFielAux red us pubs
 
 
---Ejercicio 10
+-- Ejercicio 10
 -- Verifica que (en caso que exitsa) la secuenciaDeAmigos encontrada sea de la Red y una cadenaDeAmigo
 existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
 existeSecuenciaDeAmigos ([],[],[]) _ _ = False
@@ -224,4 +231,3 @@ secuenciaDeAmigos red u1 u2 (u:us) (x:xs)
     | pertenece u1 (u:us)          = secuenciaDeAmigos red u1 u2 (quitarPrimeraAparicion u1 (u:us)) (x:xs)
     | pertenece u (amigosDe red u) = secuenciaDeAmigos red u1 u2 (quitarPrimeraAparicion u (amigosDe red u)) (x:xs)
     | otherwise                    = u:(secuenciaDeAmigos red u1 u2 (amigosDe red u) (u:(x:xs)))
-
