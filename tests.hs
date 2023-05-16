@@ -104,18 +104,8 @@ testsuiteNombresDeUsuarios = test [
 -- se esperaba(en otro orden) tenian los mismos elementos.
 
 
--- Para estos casos de test las publicaciones no son importantes
-testsuiteAmigosDe = test [
-    "Caso 1: Usuario sin amigos" ~: (amigosDe redUsuarioXSinAmigos usuario9) ~?= [],
-    "Caso 2: Red sin relaciones" ~: (amigosDe redRelacionesVacias usuario1) ~?= [],
-    "Caso 3: Usuario con relaciones de distinto ordenamiento" ~: (amigosDe redAmigosDe usuario1) ~?= [usuario2,usuario3,usuario4],
-    "Caso 4: Usuario amigo de todos" ~: (amigosDe redAmigoDeTodos usuario10) ~?= todosLosUsuariosSin10 -- Es igual de demostrativo que 3 amigos
-    -- El caso 4 tira error por el orden en el q devuelve. De todas formas podemos comparar con mismosElementos
-    --"Caso 5: Usuario amigo de todos" ~: expectAny (amigosDe redAmigoDeTodos usuario10) (permutations todosLosUsuariosSin10)
-    ]
-
 -- Amigos de: cuadro casos. Elegir que hacer entre este y el anterior
-testsuiteAmigosDe2 = test [
+testsuiteAmigosDe = test [
     "Caso 1: Red sin relaciones" ~: (amigosDe redRelacionesVacias usuario10) ~?= [],
     "Caso 2: Usuario sin amigos" ~: (amigosDe redA usuario8) ~?= [],
     "Caso 3: Usuario con amigos" ~: (amigosDe redA usuario2) ~?= [usuario1, usuario4, usuario3],
@@ -126,13 +116,6 @@ testsuiteAmigosDe2 = test [
 
 -- Para estos casos de test las publicaciones no son importantes
 testsuiteCantidadDeAmigos = test [
-    "Caso 1: Usuario sin amigos" ~: (cantidadDeAmigos redUsuarioXSinAmigos usuario9) ~?= 0,
-    "Caso 2: Usuario con 3 amigos" ~: (cantidadDeAmigos redAmigosDe usuario1) ~?= 3,
-    "Caso 3: Usuario amigo de todos" ~: (cantidadDeAmigos redAmigoDeTodos usuario10) ~?= 11 -- Usuarios totales de la red
-    ]
-
--- Elegir con el anterior
-testsuiteCantidadDeAmigos2 = test [
     "Caso 1: Red sin relaciones" ~: (cantidadDeAmigos redRelacionesVacias usuario10) ~?= 0, -- Caso 1 fuerza caso 2
     "Caso 2: Usuario sin amigos" ~: (cantidadDeAmigos redB usuario4) ~?= 0,
     "Caso 3: Usuario con amigos" ~: (cantidadDeAmigos redB usuario12) ~?= 3
@@ -172,9 +155,9 @@ testsuitePublicacionesQueLeGustanA = test [
 -- Para estos casos de test las relaciones no son importantes
 testsuiteLesGustanLasMismasPublicaciones = test [
     "Caso 1: Red sin publicaciones" ~: (lesGustanLasMismasPublicaciones redSinPublicaciones usuario1 usuario2) ~?= True,
-    "Caso 2: Ninguno likeo publicaciones" ~: (lesGustanLasMismasPublicaciones redSeguidorFiel usuario2 usuario8) ~?= True,
+    "Caso 2: Ninguno likeo publicaciones" ~: (lesGustanLasMismasPublicaciones redSeguidorFiel usuario9 usuario8) ~?= True,
     "Caso 3: Ambos likearon publicaciones pero no las mismas" ~: (lesGustanLasMismasPublicaciones redSeguidorFiel usuario11 usuario3) ~?= False,
-    "Caso 4: Ambos likearon las mismas publicaciones" ~: (lesGustanLasMismasPublicaciones redSeguidorFiel usuario10 usuario12) ~?= True
+    "Caso 4: Ambos likearon las mismas publicaciones" ~: (lesGustanLasMismasPublicaciones redSeguidorFiel usuario2 usuario12) ~?= True
     ]
 
 
@@ -184,7 +167,9 @@ testsuiteTieneUnSeguidorFiel = test [
     "Caso 2: Usuario sin publicaciones" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario1) ~?= False,
     "Caso 3: Publicaciones de usuario sin likes" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario2) ~?= False,
     "Caso 4: Publicaciones de usuario con likes (sin fiel)" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario8) ~?= False,
-    "Caso 5: Publicaciones de usuario con likes (con fiel)" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario12) ~?= True
+    "Caso 5: Publicaciones de usuario con likes (con fiel)" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario12) ~?= True,
+    -- Agregar un caso en el que un usuario se likeo todas sus propias publicaciones (deberia dar false)
+    "Caso 6: Un usuario likeo todas sus propias publicaciones" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario10) ~?= False
     ]
 
 testsuiteExisteSecuenciaDeAmigos = test [
@@ -225,26 +210,6 @@ redUsuariosSinNombresRepetidos = (usuariosSinNombresRepetidos, relacionesVacia, 
 
 usuariosConNombresRepetidos = [usuario9, usuario8, usuario4, usuario3, usuario5, usuario6]
 redUsuariosConNombresRepetidos = (usuariosConNombresRepetidos, relacionesVacia, publicacionesVacia)
-
--- Para el test suite amigosDe y cantidadDeAmigos
-usuariosAmigosDe = [usuario1,usuario2,usuario3,usuario4]
-
-redUsuarioXSinAmigos = (todosLosUsuarios, relacionesSinUsuarioX, publicacionesVacia)
-relacionesSinUsuarioX = [relacion1_2, relacion3_1, relacion4_2, relacion5_1, relacion2_3, relacion1_4, relacion4_5, relacion8_5, relacion8_12, relacion10_8, relacion12_5, relacion10_12, relacion5_10, relacion7_6, relacion4_11]
-
-relacion7_6 = (usuario6, usuario7)
-relacion4_11 = (usuario4, usuario11)
-
-relacionesAmigosDe = [relacion1_2, relacion3_1, relacion2_3, relacion1_4] -- Notar la posición cambiante 
-                                                                          -- De los usuarios en las relaciones
-
-redAmigosDe = (usuariosAmigosDe, relacionesAmigosDe, publicacionesVacia) -- Es indistinto la presencia de
-                                                                         -- Publicaciones para este ejercicio
-                                                                         -- En particular
-
-redAmigoDeTodos = (todosLosUsuarios, relacionAmigoDeTodos,publicacionesVacia)      
-relacionAmigoDeTodos = [relacion10_1,relacion10_12,relacion10_2,relacion11_10,relacion3_10,relacion10_4,relacion5_10,relacion10_6,relacion7_10,relacion10_8,relacion10_9]                                                                   
-todosLosUsuariosSin10 = [usuario1, usuario2, usuario3, usuario4, usuario5, usuario6, usuario7, usuario8, usuario9, usuario11, usuario12]
 
 -- Para el test suite usuarioConMasAmigos
 usuariosA = [usuario1, usuario2, usuario3, usuario4, usuario5, usuario8]
@@ -296,15 +261,19 @@ redConRobertoCarlos = (todosLosUsuarios, relacionesConRobertoCarlos, publicacion
 -- Para el test de publicacionesDe
 
 publicacion8_1 = (usuario8, "La revolucion industrial y sus consecuencias", [usuario3, usuario7, usuario1, usuario6])
-publicacion8_2 = (usuario8, "Fueron un desastre para la raza humana", [usuario10, usuario4, usuario12])
+publicacion8_2 = (usuario8, "Fueron un desastre para la raza humana", [usuario2, usuario4, usuario12])
 
 publicacion12_1 = (usuario12, "According to all known laws of aviation, there is no way a bee should be able to fly.", [usuario11, usuario5])
 publicacion12_2 = (usuario12, "Its wings are too small to get its fat little body off the ground.", [usuario11, usuario4])
-publicacion12_3 = (usuario12, "The bee, of course, flies anyway because bees don't care what humans think is impossible.", [usuario1,usuario3,usuario4,usuario5,usuario6,usuario7,usuario9,usuario11])
-publicacion12_4 = (usuario12, "Yellow, black. Yellow, black. Yellow, black. Yellow, black.", [usuario11, usuario9 ])
-publicacion12_5 = (usuario12, "Ooh, black and yellow! Let's shake it up a little.", [usuario11, usuario7, usuario10, usuario12])
+publicacion12_3 = (usuario12, "The bee, of course, flies anyway because bees don't care what humans think is impossible.", [usuario1,usuario3,usuario4,usuario5,usuario6,usuario7,usuario11])
+publicacion12_4 = (usuario12, "Yellow, black. Yellow, black. Yellow, black. Yellow, black.", [usuario11])
+publicacion12_5 = (usuario12, "Ooh, black and yellow! Let's shake it up a little.", [usuario11, usuario7, usuario2, usuario12])
 
-publicaciones_8_12 = [publicacion8_1, publicacion8_2, publicacion12_1, publicacion12_2, publicacion12_3, publicacion12_4, publicacion12_5]
+publicacion10_1 = (usuario10, "Soy gobernador2003@hotmail (¡Tengo facebook!)", [usuario10])
+publicacion10_2 = (usuario10, "Baila que te baila con el gobernador2003@hotmail", [usuario10])
+publicacion10_3 = (usuario10, "Tengo webcam (¡Y tengo email!)", [usuario10])
+
+publicaciones_8_12 = [publicacion8_1, publicacion8_2, publicacion12_1, publicacion12_2, publicacion12_3, publicacion12_4, publicacion12_5, publicacion10_1, publicacion10_2, publicacion10_3]
 
 redConPublicaciones = (todosLosUsuarios, relacionesVacia, publicaciones_8_12)
 redSinPublicaciones = (todosLosUsuarios, relacionesVacia, publicacionesVacia)
@@ -320,7 +289,6 @@ redSeguidorFiel = (todosLosUsuarios, relacionesVacia, publicaciones_seguidorFiel
 -- Para el test de existeSecuenciaDeAmigos
 
 relacion7_1   = (usuario7, usuario1)
---relacion1_4   = (usuario4, usuario1) (ya esta def)
 relacion4_3   = (usuario4, usuario3)
 relacion3_12  = (usuario12, usuario3)
 relacion12_11 = (usuario12, usuario11)
