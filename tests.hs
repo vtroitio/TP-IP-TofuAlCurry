@@ -1,40 +1,65 @@
 import Test.HUnit
 import Solucion
+import Solucion (tieneUnSeguidorFiel, existeSecuenciaDeAmigos, amigosDe, cantidadDeAmigos)
 
 main = runTestTT todosLosTest
 
+-- Cuando nosotros corriamos los casos de test notamos que era
+-- mas claro si  lo haciamos de  esta forma asi ya veiamos que
+-- funcion en particular era la que tenia problemas.
+-- Decidimos poner en los  casos como "Caso n: descripcion" ya
+-- que nos parecia que poner "nombreDeLaFuncion n: descripcion"
+-- se volveria muy engorroso de leer.
 mainConTitulos = do
+    -- Ej 1
     putStrLn("Test suite: nombresDeUsuarios")
     runTestTT testsuiteNombresDeUsuarios
     putStrLn("")
 
+    --Ej 2
     putStrLn("Test suite: amigosDe")
     runTestTT testsuiteAmigosDe
     putStrLn("")
 
-     putStrLn("Test suite: cantidadDeAmigos")
+    --Ej 3
+    putStrLn("Test suite: cantidadDeAmigos")
     runTestTT testsuiteCantidadDeAmigos
     putStrLn("")
 
+    --Ej 4
     putStrLn("Test suite: usuarioConMasAmigos")
     runTestTT testsuiteUsuarioConMasAmigos
     putStrLn("")
 
+    -- Ej 5
     putStrLn("Test suite: estaRobertoCarlos")
     runTestTT testsuiteEstaRobertoCarlos
     putStrLn("")
 
+    -- Ej 6
     putStrLn("Test suite: publicacionesDe")
     runTestTT testsuitePublicacionesDe
     putStrLn("")
     
+    -- Ej 9
+    putStrLn("Test suite: tieneUnSeguidorFiel")
+    runTestTT testsuiteTieneUnSeguidorFiel
+    putStrLn("")
+
+    -- Ej 10
+    putStrLn("Test suite: existeSecuenciaDeAmigos")
+    runTestTT testsuiteExisteSecuenciaDeAmigos
+    putStrLn("")
 
 todosLosTest = test [
     testsuiteNombresDeUsuarios,
     testsuiteUsuarioConMasAmigos,
     testsuiteEstaRobertoCarlos,
     testsuiteAmigosDe,
-    testsuiteCantidadDeAmigos
+    testsuiteCantidadDeAmigos,
+    testsuiteTieneUnSeguidorFiel,
+    testsuitePublicacionesDe,
+    testsuiteExisteSecuenciaDeAmigos
     ]
 
 -- Aclaracion: testsuiteNombresDeUsuarios
@@ -45,15 +70,26 @@ todosLosTest = test [
 -- posibles casos  vamos a descartarlos, pasando siempre los  mismos
 -- valores para dichos parametros.
 -- Aclaracion general:
--- Esa va a ser la forma de encarar todos los casos de  test para las
+-- Esa va a ser la forma de encarar todos los casos de test para las
 -- funciones que se comporten de forma similar para todo el TP.
 
 testsuiteNombresDeUsuarios = test [
     "Caso 1: Lista de usuarios vacia" ~: (nombresDeUsuarios redUsuariosVacia) ~?= [],
-    "Caso 2: Lista de usuarios sin nombres repetidos" ~: (nombresDeUsuarios redUsuariosSinNombresRepetidos) ~?= ["Facu", "Jose", "Valen", "Tobi", "Cumbio"],
-     -- Aca medio que el test case esta "elegido a mano" porque no sabiamos como poner todas las permutaciones sin usar Data.List
-    "Caso 3: Lista de usuarios con nombres repetidos" ~: (nombresDeUsuarios redUsuariosConNombresRepetidos) ~?= ["Tobi","Valen", "Cumbio", "Mati_capo_49"]
+    "Caso 2.1: Lista de usuarios sin nombres repetidos" ~: (nombresDeUsuarios redUsuariosSinNombresRepetidos) ~?= ["Facu", "Jose", "Valen", "Tobi", "Cumbio"],
+    "Caso 2.2: Lista de usuarios sin nombres repetidos" ~: (mismosElementos (nombresDeUsuarios redUsuariosSinNombresRepetidos) ["Jose", "Facu", "Valen", "Cumbio", "Tobi"] )~?= True,
+    "Caso 3.1: Lista de usuarios con nombres repetidos" ~: (nombresDeUsuarios redUsuariosConNombresRepetidos) ~?= ["Tobi","Valen", "Cumbio", "Mati_capo_49"],
+    "Caso 3.2: Lista de usuarios con nombres repetidos" ~: (mismosElementos (nombresDeUsuarios redUsuariosConNombresRepetidos) ["Tobi", "Mati_capo_49", "Valen", "Cumbio"]) ~?= True
     ]
+-- Para la funcion nombresDeUsuarios notamos que mas de un resultado
+-- podia ser correcto. Esto se debe a  que cualquier permutacion  de
+-- una lista que contenga todos los nombres de usuario, sin repetir,
+-- era correcta. Esto se puede  implementar en el  testeo usando  la
+-- funcion expectAny(en el archivo de la catedra)  y alguna  funcion
+-- que  devuelva todas  las permutaciones  posibles de  los  nombres
+-- correctos,  por  ejemplo permutations  de Data.List.  Esto no  lo
+-- implementamos debido a que no se podian meter librerias nuevas.
+-- Lo que si hicimos fue comparar si la lista de la funcion y la que
+-- se esperaba(en otro orden) tenian los mismos elementos.
 
 -- Para estos casos de test las publicaciones no son importantes
 testsuiteAmigosDe = test [
@@ -92,10 +128,28 @@ testsuiteEstaRobertoCarlos = test [
 testsuitePublicacionesDe = test [
     "Caso 1: Red sin publicaciones" ~: (publicacionesDe redSinPublicaciones usuario2) ~?= [],
     "Caso 2: Usuario sin publicaciones" ~: (publicacionesDe redConPublicaciones usuario2) ~?= [],
-    "Caso 3.1: Usuario con publicaciones" ~: (publicacionesDe redConPublicaciones usuario12) ~?= [publicacion12_1, publicacion12_2, publicacion12_3, publicacion12_4, publicacion12_5],
-    "Caso 3.2: Usuario con publicaciones" ~: (publicacionesDe redConPublicaciones usuario8) ~?= [publicacion8_1, publicacion8_2]
+    "Caso 3.1: Usuario con publicaciones" ~: (publicacionesDe redConPublicaciones usuario12) ~?= [publicacion12_1, publicacion12_2, publicacion12_3, publicacion12_4, publicacion12_5]
+    -- Poner dos casos igual de representativos no es necesario, capaz si es un testeo mas intenso si.
+    --"Caso 3.2: Usuario con publicaciones" ~: (publicacionesDe redConPublicaciones usuario8) ~?= [publicacion8_1, publicacion8_2]
     ]
 
+-- Para estos casos de test las relaciones no son importantes
+testsuiteTieneUnSeguidorFiel = test [
+    "Caso 1: Red sin publicaciones" ~: (tieneUnSeguidorFiel redSinPublicaciones usuario6) ~?= False,
+    "Caso 2: Usuario sin publicaciones" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario1) ~?= False,
+    "Caso 3: Publicaciones de usuario sin likes" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario2) ~?= False,
+    "Caso 4: Publicaciones de usuario con likes (sin fiel)" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario8) ~?= False,
+    "Caso 5: Publicaciones de usuario con likes (con fiel)" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario12) ~?= True
+    ]
+
+testsuiteExisteSecuenciaDeAmigos = test [
+    "Caso 1: Red sin relaciones" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario7 usuario5) ~?= False,
+    "Caso 2: u1 sin amigos" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario8 usuario12) ~?= False,
+    "Caso 3: u2 sin amigos" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario5 usuario8) ~?= False,
+    "Caso 4: u1 y u2 con amigos, u1 = u2" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario1 usuario1) ~?= True,
+    "Caso 5: u1 y u2 con amigos, u1 /= u2 (existe)" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario7 usuario11) ~?= True,
+    "Caso 6: u1 y u2 con amigos, u1 /= u2 (no existe)" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario5 usuario3) ~?= False
+    ]
 -- No sabemos si podemos usar esto o no
 expectAny actual expected = elem actual expected ~? ("expected any of: " ++ show expected ++ "\n but got: " ++ show actual)
 
@@ -210,3 +264,26 @@ publicaciones_8_12 = [publicacion8_1, publicacion8_2, publicacion12_1, publicaci
 
 redConPublicaciones = (todosLosUsuarios, relacionesVacia, publicaciones_8_12)
 redSinPublicaciones = (todosLosUsuarios, relacionesVacia, publicacionesVacia)
+
+-- Para el test de tieneUnSeguidorFiel
+
+publicacion2_1 = (usuario2, "Como ojos", [])
+publicacion2_2 = (usuario2, "Mick Jones tiene frio por los ojos", [])
+
+publicaciones_seguidorFiel = [publicacion2_1, publicacion2_2] ++ publicaciones_8_12
+redSeguidorFiel = (todosLosUsuarios, relacionesVacia, publicaciones_seguidorFiel)
+
+-- Para el test de existeSecuenciaDeAmigos
+
+relacion7_1   = (usuario7, usuario1)
+--relacion1_4   = (usuario4, usuario1) (ya esta def)
+relacion4_3   = (usuario4, usuario3)
+relacion3_12  = (usuario12, usuario3)
+relacion12_11 = (usuario12, usuario11)
+
+relacion5_2 = (usuario5, usuario2)
+relacion6_5 = (usuario6, usuario5)
+
+relacionesSecuenciaDeAmigos = [relacion7_1, relacion1_4, relacion4_3, relacion3_12, relacion12_11, relacion5_2, relacion6_5]
+
+redSecuenciaDeAmigos = (todosLosUsuarios, relacionesSecuenciaDeAmigos, publicaciones_seguidorFiel)
