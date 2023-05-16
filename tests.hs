@@ -35,11 +35,17 @@ mainConTitulos = do
     runTestTT testsuiteTieneUnSeguidorFiel
     putStrLn("")
 
+    -- Ej 10
+    putStrLn("Test suite: existeSecuenciaDeAmigos")
+    runTestTT testsuiteExisteSecuenciaDeAmigos
+    putStrLn("")
+
 todosLosTest = test [
     testsuiteNombresDeUsuarios,
-    testsuiteUstuarioConMasAmigos,
+    testsuiteUsuarioConMasAmigos,
     testsuiteEstaRobertoCarlos,
-    testsuiteTieneUnSeguidorFiel
+    testsuiteTieneUnSeguidorFiel,
+    testsuiteExisteSecuenciaDeAmigos
     ]
 
 -- Aclaracion: testsuiteNombresDeUsuarios
@@ -107,6 +113,14 @@ testsuiteTieneUnSeguidorFiel = test [
     "Caso 5: Publicaciones de usuario con likes (con fiel)" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario12) ~?= True
     ]
 
+testsuiteExisteSecuenciaDeAmigos = test [
+    "Caso 1: Red sin relaciones" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario7 usuario5) ~?= False,
+    "Caso 2: u1 sin amigos" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario8 usuario12) ~?= False,
+    "Caso 3: u2 sin amigos" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario5 usuario8) ~?= False,
+    "Caso 4: u1 y u2 con amigos, u1 = u2" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario1 usuario1) ~?= True,
+    "Caso 5: u1 y u2 con amigos, u1 /= u2 (existe)" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario7 usuario11) ~?= True,
+    "Caso 6: u1 y u2 con amigos, u1 /= u2 (no existe)" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario5 usuario3) ~?= False
+    ]
 -- No sabemos si podemos usar esto o no
 expectAny actual expected = elem actual expected ~? ("expected any of: " ++ show expected ++ "\n but got: " ++ show actual)
 
@@ -208,3 +222,18 @@ publicacion2_2 = (usuario2, "Mick Jones tiene frio por los ojos", [])
 
 publicaciones_seguidorFiel = [publicacion2_1, publicacion2_2] ++ publicaciones_8_12
 redSeguidorFiel = (todosLosUsuarios, relacionesVacia, publicaciones_seguidorFiel)
+
+-- Para el test de existeSecuenciaDeAmigos
+
+relacion7_1   = (usuario7, usuario1)
+--relacion1_4   = (usuario4, usuario1) (ya esta def)
+relacion4_3   = (usuario4, usuario3)
+relacion3_12  = (usuario12, usuario3)
+relacion12_11 = (usuario12, usuario11)
+
+relacion5_2 = (usuario5, usuario2)
+relacion6_5 = (usuario6, usuario5)
+
+relacionesSecuenciaDeAmigos = [relacion7_1, relacion1_4, relacion4_3, relacion3_12, relacion12_11, relacion5_2, relacion6_5]
+
+redSecuenciaDeAmigos = (todosLosUsuarios, relacionesSecuenciaDeAmigos, publicaciones_seguidorFiel)
