@@ -1,6 +1,6 @@
 import Test.HUnit
 import Solucion
-import Solucion (tieneUnSeguidorFiel, existeSecuenciaDeAmigos, amigosDe, cantidadDeAmigos)
+--import Data.List
 
 main = runTestTT todosLosTest
 
@@ -40,7 +40,17 @@ mainConTitulos = do
     putStrLn("Test suite: publicacionesDe")
     runTestTT testsuitePublicacionesDe
     putStrLn("")
-    
+
+    -- Ej 7
+    putStrLn("Test suite: publicacionesQueLeGustanA")
+    runTestTT testsuitePublicacionesQueLeGustanA
+    putStrLn("")
+
+    -- Ej 8
+    putStrLn("Test suite: leGustanLasMismasPublicaciones")
+    runTestTT testsuiteLesGustanLasMismasPublicaciones
+    putStrLn("")
+
     -- Ej 9
     putStrLn("Test suite: tieneUnSeguidorFiel")
     runTestTT testsuiteTieneUnSeguidorFiel
@@ -53,12 +63,14 @@ mainConTitulos = do
 
 todosLosTest = test [
     testsuiteNombresDeUsuarios,
-    testsuiteUsuarioConMasAmigos,
-    testsuiteEstaRobertoCarlos,
     testsuiteAmigosDe,
     testsuiteCantidadDeAmigos,
+    testsuiteUsuarioConMasAmigos,
+    testsuiteEstaRobertoCarlos,
     testsuiteTieneUnSeguidorFiel,
     testsuitePublicacionesDe,
+    testsuitePublicacionesQueLeGustanA,
+    testsuiteLesGustanLasMismasPublicaciones,
     testsuiteExisteSecuenciaDeAmigos
     ]
 
@@ -91,34 +103,51 @@ testsuiteNombresDeUsuarios = test [
 -- Lo que si hicimos fue comparar si la lista de la funcion y la que
 -- se esperaba(en otro orden) tenian los mismos elementos.
 
+
 -- Para estos casos de test las publicaciones no son importantes
 testsuiteAmigosDe = test [
-    "Caso 1: Usuario sin amigos" ~: (amigosDe redUsuarioXSinAmigo usuario9) ~?= []
-    "Caso 2: Red sin relaciones" ~: (amigosDe redRelacionesVacias usuario1) ~?= []
-    "Caso 3: Usuario con relaciones de distinto ordenamiento" ~: (amigosDe redAmigosDe usuario1) ~?= [usuario2,usuario3,usuario4]
-    "Caso 4: Usuario amigo de todos" ~: (amigosDe redAmigoDeTodos usuario10) ~?= todosLosUsuariosSin10
+    "Caso 1: Usuario sin amigos" ~: (amigosDe redUsuarioXSinAmigos usuario9) ~?= [],
+    "Caso 2: Red sin relaciones" ~: (amigosDe redRelacionesVacias usuario1) ~?= [],
+    "Caso 3: Usuario con relaciones de distinto ordenamiento" ~: (amigosDe redAmigosDe usuario1) ~?= [usuario2,usuario3,usuario4],
+    "Caso 4: Usuario amigo de todos" ~: (amigosDe redAmigoDeTodos usuario10) ~?= todosLosUsuariosSin10 -- Es igual de demostrativo que 3 amigos
+    -- El caso 4 tira error por el orden en el q devuelve. De todas formas podemos comparar con mismosElementos
+    --"Caso 5: Usuario amigo de todos" ~: expectAny (amigosDe redAmigoDeTodos usuario10) (permutations todosLosUsuariosSin10)
     ]
+
+-- Amigos de: cuadro casos. Elegir que hacer entre este y el anterior
+testsuiteAmigosDe2 = test [
+    "Caso 1: Red sin relaciones" ~: (amigosDe redRelacionesVacias usuario10) ~?= [],
+    "Caso 2: Usuario sin amigos" ~: (amigosDe redA usuario8) ~?= [],
+    "Caso 3: Usuario con amigos" ~: (amigosDe redA usuario2) ~?= [usuario1, usuario4, usuario3],
+    "Caso 3.2: Usuario con amigos" ~: mismosElementos (amigosDe redA usuario2) [usuario1, usuario3, usuario4] ~?= True
+    ]
+-- El mismo argumento de las permutaciones que planteamos
+-- en testsuiteNombresDeUsuarios aplica para esta funcion
 
 -- Para estos casos de test las publicaciones no son importantes
 testsuiteCantidadDeAmigos = test [
-    "Caso 1: Usuario sin amigos" ~: (cantidadDeAmigos redUsuarioXSinAmigo usuario9) ~?= 0
-    "Caso 2: Usuario con 3 amigos" ~: (cantidadDeAmigos redAmigosDe usuario1) ~?= 3
+    "Caso 1: Usuario sin amigos" ~: (cantidadDeAmigos redUsuarioXSinAmigos usuario9) ~?= 0,
+    "Caso 2: Usuario con 3 amigos" ~: (cantidadDeAmigos redAmigosDe usuario1) ~?= 3,
     "Caso 3: Usuario amigo de todos" ~: (cantidadDeAmigos redAmigoDeTodos usuario10) ~?= 11 -- Usuarios totales de la red
+    ]
+
+-- Elegir con el anterior
+testsuiteCantidadDeAmigos2 = test [
+    "Caso 1: Red sin relaciones" ~: (cantidadDeAmigos redRelacionesVacias usuario10) ~?= 0, -- Caso 1 fuerza caso 2
+    "Caso 2: Usuario sin amigos" ~: (cantidadDeAmigos redB usuario4) ~?= 0,
+    "Caso 3: Usuario con amigos" ~: (cantidadDeAmigos redB usuario12) ~?= 3
     ]
 
 -- Para estos casos de test las publicaciones no son importantes
 testsuiteUsuarioConMasAmigos = test [
-    --"Caso 1: Lista de relaciones vacia" ~: (usuarioConMasAmigos redRelacionesVacias) ~?= usuario8,
     "Caso 1: Lista de relaciones vacia" ~: expectAny (usuarioConMasAmigos redRelacionesVacias) [usuario8, usuario12, usuario10, usuario5],
     "Caso 2: Uno solo con la mayor cantidad de amigos" ~: (usuarioConMasAmigos redA) ~?= usuario1,
-    --"Caso 3: Mas de uno con la mayor cantidad de amigos" ~: (usuarioConMasAmigos redB) ~?= usuario8,
     "Caso 3: Mas de uno con la mayor cantidad de amigos" ~: expectAny (usuarioConMasAmigos redB) [usuario8, usuario12]
     ]
 
 -- Para estos casos de test las publicaciones no son importantes
 testsuiteEstaRobertoCarlos = test [
-    -- Segun la especificacion interpretamos que puede haber una lista de relaciones no vacia con una lista de usuarios vacia en una red
-    "Caso 1: Lista de usuarios vacia" ~: (estaRobertoCarlos redUsuariosVaciaRobertoCarlos) ~?= False, -- Red usuarios vacia tiene relaciones vacia tambien. Hace falta probar todos los casos???
+    "Caso 1: Lista de usuarios vacia" ~: (estaRobertoCarlos redUsuariosVaciaRobertoCarlos) ~?= False,
     "Caso 2: Lista de relaciones vacia" ~: (estaRobertoCarlos redRelacionesVacias) ~?= False,
     "Caso 3: Ningun usuario con mas de 10 amigos" ~: (estaRobertoCarlos redSinRobertoCarlos) ~?= False,
     "Caso 4: Algun usuario con mas de 10 amigos" ~: (estaRobertoCarlos redConRobertoCarlos) ~?= True
@@ -134,6 +163,22 @@ testsuitePublicacionesDe = test [
     ]
 
 -- Para estos casos de test las relaciones no son importantes
+testsuitePublicacionesQueLeGustanA = test [
+    "Caso 1: Red sin publicaciones" ~: (publicacionesQueLeGustanA redSinPublicaciones usuario2) ~?= [],
+    "Caso 2: Usuario no likeo publicaciones" ~: (publicacionesQueLeGustanA redSeguidorFiel usuario8) ~?= [],
+    "Caso 3: Usuario likeo publicaciones" ~: (publicacionesQueLeGustanA redSeguidorFiel usuario7) ~?= [publicacion8_1, publicacion12_3, publicacion12_5]
+    ]
+
+-- Para estos casos de test las relaciones no son importantes
+testsuiteLesGustanLasMismasPublicaciones = test [
+    "Caso 1: Red sin publicaciones" ~: (lesGustanLasMismasPublicaciones redSinPublicaciones usuario1 usuario2) ~?= True,
+    "Caso 2: Ninguno likeo publicaciones" ~: (lesGustanLasMismasPublicaciones redSeguidorFiel usuario2 usuario8) ~?= True,
+    "Caso 3: Ambos likearon publicaciones pero no las mismas" ~: (lesGustanLasMismasPublicaciones redSeguidorFiel usuario11 usuario3) ~?= False,
+    "Caso 4: Ambos likearon las mismas publicaciones" ~: (lesGustanLasMismasPublicaciones redSeguidorFiel usuario10 usuario12) ~?= True
+    ]
+
+
+-- Para estos casos de test las relaciones no son importantes
 testsuiteTieneUnSeguidorFiel = test [
     "Caso 1: Red sin publicaciones" ~: (tieneUnSeguidorFiel redSinPublicaciones usuario6) ~?= False,
     "Caso 2: Usuario sin publicaciones" ~: (tieneUnSeguidorFiel redSeguidorFiel usuario1) ~?= False,
@@ -143,12 +188,12 @@ testsuiteTieneUnSeguidorFiel = test [
     ]
 
 testsuiteExisteSecuenciaDeAmigos = test [
-    "Caso 1: Red sin relaciones" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario7 usuario5) ~?= False,
-    "Caso 2: u1 sin amigos" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario8 usuario12) ~?= False,
-    "Caso 3: u2 sin amigos" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario5 usuario8) ~?= False,
-    "Caso 4: u1 y u2 con amigos, u1 = u2" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario1 usuario1) ~?= True,
-    "Caso 5: u1 y u2 con amigos, u1 /= u2 (existe)" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario7 usuario11) ~?= True,
-    "Caso 6: u1 y u2 con amigos, u1 /= u2 (no existe)" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario5 usuario3) ~?= False
+    "Caso 1: Red sin relaciones" ~: (existeSecuenciaDeAmigos redRelacionesVacias usuario8 usuario5) ~?= False,
+    "Caso 2: u1 sin amigos" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigos usuario8 usuario12) ~?= False,
+    "Caso 3: u2 sin amigos" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigos usuario5 usuario8) ~?= False,
+    "Caso 4: u1 y u2 con amigos, u1 = u2" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigos usuario1 usuario1) ~?= True,
+    "Caso 5: u1 y u2 con amigos, u1 /= u2 (existe)" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigos usuario7 usuario11) ~?= True,
+    "Caso 6: u1 y u2 con amigos, u1 /= u2 (no existe)" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigos usuario5 usuario3) ~?= False
     ]
 -- No sabemos si podemos usar esto o no
 expectAny actual expected = elem actual expected ~? ("expected any of: " ++ show expected ++ "\n but got: " ++ show actual)
@@ -185,7 +230,7 @@ redUsuariosConNombresRepetidos = (usuariosConNombresRepetidos, relacionesVacia, 
 usuariosAmigosDe = [usuario1,usuario2,usuario3,usuario4]
 
 redUsuarioXSinAmigos = (todosLosUsuarios, relacionesSinUsuarioX, publicacionesVacia)
-relacionesSinUsuario = [relacion1_2, relacion3_1, relacion4_2, relacion5_1, relacion2_3, relacion1_4, relacion4_5, relacion8_5, relacion8_12, relacion10_8, relacion12_5, relacion10_12, relacion5_10, relacion7_6, relacion4_11]
+relacionesSinUsuarioX = [relacion1_2, relacion3_1, relacion4_2, relacion5_1, relacion2_3, relacion1_4, relacion4_5, relacion8_5, relacion8_12, relacion10_8, relacion12_5, relacion10_12, relacion5_10, relacion7_6, relacion4_11]
 
 relacion7_6 = (usuario6, usuario7)
 relacion4_11 = (usuario4, usuario11)
@@ -193,7 +238,6 @@ relacion4_11 = (usuario4, usuario11)
 relacionesAmigosDe = [relacion1_2, relacion3_1, relacion2_3, relacion1_4] -- Notar la posición cambiante 
                                                                           -- De los usuarios en las relaciones
 
-redRelacionesVacias = (usuariosB, relacionesVacia, publicacionesVacia)
 redAmigosDe = (usuariosAmigosDe, relacionesAmigosDe, publicacionesVacia) -- Es indistinto la presencia de
                                                                          -- Publicaciones para este ejercicio
                                                                          -- En particular
@@ -204,7 +248,7 @@ todosLosUsuariosSin10 = [usuario1, usuario2, usuario3, usuario4, usuario5, usuar
 
 -- Para el test suite usuarioConMasAmigos
 usuariosA = [usuario1, usuario2, usuario3, usuario4, usuario5, usuario8]
-usuariosB = [usuario8, usuario12, usuario10, usuario5]
+usuariosB = [usuario8, usuario12, usuario10, usuario5, usuario4]
 
 relacion1_2 = (usuario1, usuario2)
 relacion3_1 = (usuario3, usuario1)
@@ -254,11 +298,11 @@ redConRobertoCarlos = (todosLosUsuarios, relacionesConRobertoCarlos, publicacion
 publicacion8_1 = (usuario8, "La revolucion industrial y sus consecuencias", [usuario3, usuario7, usuario1, usuario6])
 publicacion8_2 = (usuario8, "Fueron un desastre para la raza humana", [usuario10, usuario4, usuario12])
 
-publicacion12_1 = (usuario12, "According to all known laws of aviation, there is no way a bee should be able to fly.", [usuario11, usuario5, usuario2])
+publicacion12_1 = (usuario12, "According to all known laws of aviation, there is no way a bee should be able to fly.", [usuario11, usuario5])
 publicacion12_2 = (usuario12, "Its wings are too small to get its fat little body off the ground.", [usuario11, usuario4])
-publicacion12_3 = (usuario12, "The bee, of course, flies anyway because bees don't care what humans think is impossible.", todosLosUsuarios)
+publicacion12_3 = (usuario12, "The bee, of course, flies anyway because bees don't care what humans think is impossible.", [usuario1,usuario3,usuario4,usuario5,usuario6,usuario7,usuario9,usuario11])
 publicacion12_4 = (usuario12, "Yellow, black. Yellow, black. Yellow, black. Yellow, black.", [usuario11, usuario9 ])
-publicacion12_5 = (usuario12, "Ooh, black and yellow! Let's shake it up a little.", [usuario11, usuario7])
+publicacion12_5 = (usuario12, "Ooh, black and yellow! Let's shake it up a little.", [usuario11, usuario7, usuario10, usuario12])
 
 publicaciones_8_12 = [publicacion8_1, publicacion8_2, publicacion12_1, publicacion12_2, publicacion12_3, publicacion12_4, publicacion12_5]
 

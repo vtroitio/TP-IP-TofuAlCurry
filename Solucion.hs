@@ -45,9 +45,17 @@ pertenece e (x:xs) = e == x || pertenece e xs
 -- Dadas dos listas determina si tienen los mismos elementos o no
 mismosElementos :: (Eq t) => [t] -> [t] -> Bool
 mismosElementos l1 l2 = listaIncluida l1 l2 && listaIncluida l2 l1
-    where
-        listaIncluida [] _ = True
-        listaIncluida (x:xs) ys = pertenece x ys && listaIncluida xs (quitarPrimeraAparicion x ys)
+
+listaIncluida :: (Eq t) => [t] -> [t] -> Bool
+listaIncluida [] _ = True
+listaIncluida (x:xs) ys = pertenece x ys && listaIncluida xs (quitarPrimeraAparicion x ys)
+
+intersecarListas :: (Eq t) => [t] -> [t] -> [t]
+intersecarListas _ [] = []
+intersecarListas [] _ = []
+intersecarListas (x:xs) ys
+    | pertenece x ys = x : intersecarListas xs (quitarPrimeraAparicion x ys)
+    | otherwise      = intersecarListas xs ys
 
 -- Dada una lista y un elemento, devuelve la lista sin la primera aparicion de dicho elemento
 quitarPrimeraAparicion :: (Eq t) => t -> [t] -> [t]
@@ -150,7 +158,7 @@ publicacionesDe red u = publicacionesDeUsuario (publicaciones red) u
 --Ejercicio 7
 -- describir qué hace la función: .....
 publicacionesQueLeGustanA :: RedSocial -> Usuario -> [Publicacion]
-publicacionesQueLeGustanA red u = verificaLikes (publicaciones red) u
+publicacionesQueLeGustanA red u = verificaLikes (publicaciones red) u -- verifica likes tiene nombre que pinta booleano
     where verificaLikes [] _ = []
           verificaLikes (pub:pubs) u
             | pertenece u (likesDePublicacion pub) = pub:verificaLikes pubs u
@@ -159,12 +167,12 @@ publicacionesQueLeGustanA red u = verificaLikes (publicaciones red) u
 --Ejercicio 8
 -- describir qué hace la función: .....
 lesGustanLasMismasPublicaciones :: RedSocial -> Usuario -> Usuario -> Bool
-lesGustanLasMismasPublicaciones = undefined
+lesGustanLasMismasPublicaciones red u1 u2 = mismosElementos (publicacionesQueLeGustanA red u1) (publicacionesQueLeGustanA red u2)
 
 --Ejercicio 9
 -- Verifica que el usuario a evaluar tenga likes de un usuario distinto en todas sus publicaciones
-tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
-tieneUnSeguidorFiel red u = verificaSeguidorFiel (publicacionesDe red u) (publicacionesDe red u) (usuarios red)
+tieneUnSeguidorFiel3 :: RedSocial -> Usuario -> Bool
+tieneUnSeguidorFiel3 red u = verificaSeguidorFiel (publicacionesDe red u) (publicacionesDe red u) (usuarios red)
     where verificaSeguidorFiel [] _ _ = False
           verificaSeguidorFiel _ [] _ = True
           verificaSeguidorFiel _ _ [] = False
@@ -172,6 +180,31 @@ tieneUnSeguidorFiel red u = verificaSeguidorFiel (publicacionesDe red u) (public
             | usuarioDePublicacion pub == u = verificaSeguidorFiel pubsTotales pubsTotales us
             | pertenece u (likesDePublicacion pub) == True = verificaSeguidorFiel pubsTotales pubs (u:us)
             | otherwise = verificaSeguidorFiel pubsTotales pubsTotales us
+
+-- Esto todavia tiene un pequeño error pero debe haber una forma de este estilo de encararlo
+tieneUnSeguidorFiel2 :: RedSocial -> Usuario -> Bool
+tieneUnSeguidorFiel2 red u = tieneFielAux (usuarios red) (publicacionesDe red u)
+    where
+        tieneFielAux :: [Usuario] -> [Publicacion] -> Bool
+        tieneFielAux [] _ = False
+        tieneFielAux _ [] = False
+        tieneFielAux (u:us) (p:pubs)
+            | pertenece u (likesDePublicacion p) && longitud pubs == 0 = True
+            | pertenece u (likesDePublicacion p) = tieneFielAux (u:us) pubs
+            | otherwise = tieneFielAux us (p:pubs)
+
+-- idea de jose de usar intersecar listas
+-- me parece que es mas claro que la otra
+tieneUnSeguidorFiel :: RedSocial -> Usuario -> Bool
+tieneUnSeguidorFiel red u = seguidorFielAux red (usuarios red) (publicacionesDe red u)
+    where
+        seguidorFielAux :: RedSocial -> [Usuario] -> [Publicacion] -> Bool
+        seguidorFielAux _ [] _ = False
+        seguidorFielAux _ _ [] = False
+        seguidorFielAux red (u:us) pubs
+            | mismosElementos pubs (intersecarListas (publicacionesQueLeGustanA red u) pubs) = True
+            | otherwise = seguidorFielAux red us pubs
+
 
 --Ejercicio 10
 -- Verifica que (en caso que exitsa) la secuenciaDeAmigos encontrada sea de la Red y una cadenaDeAmigo
