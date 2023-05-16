@@ -8,6 +8,14 @@ mainConTitulos = do
     runTestTT testsuiteNombresDeUsuarios
     putStrLn("")
 
+    putStrLn("Test suite: amigosDe")
+    runTestTT testsuiteAmigosDe
+    putStrLn("")
+
+     putStrLn("Test suite: cantidadDeAmigos")
+    runTestTT testsuiteCantidadDeAmigos
+    putStrLn("")
+
     putStrLn("Test suite: usuarioConMasAmigos")
     runTestTT testsuiteUsuarioConMasAmigos
     putStrLn("")
@@ -24,7 +32,9 @@ mainConTitulos = do
 todosLosTest = test [
     testsuiteNombresDeUsuarios,
     testsuiteUsuarioConMasAmigos,
-    testsuiteEstaRobertoCarlos
+    testsuiteEstaRobertoCarlos,
+    testsuiteAmigosDe,
+    testsuiteCantidadDeAmigos
     ]
 
 -- Aclaracion: testsuiteNombresDeUsuarios
@@ -43,6 +53,21 @@ testsuiteNombresDeUsuarios = test [
     "Caso 2: Lista de usuarios sin nombres repetidos" ~: (nombresDeUsuarios redUsuariosSinNombresRepetidos) ~?= ["Facu", "Jose", "Valen", "Tobi", "Cumbio"],
      -- Aca medio que el test case esta "elegido a mano" porque no sabiamos como poner todas las permutaciones sin usar Data.List
     "Caso 3: Lista de usuarios con nombres repetidos" ~: (nombresDeUsuarios redUsuariosConNombresRepetidos) ~?= ["Tobi","Valen", "Cumbio", "Mati_capo_49"]
+    ]
+
+-- Para estos casos de test las publicaciones no son importantes
+testsuiteAmigosDe = test [
+    "Caso 1: Usuario sin amigos" ~: (amigosDe redUsuarioXSinAmigo usuario9) ~?= []
+    "Caso 2: Red sin relaciones" ~: (amigosDe redRelacionesVacias usuario1) ~?= []
+    "Caso 3: Usuario con relaciones de distinto ordenamiento" ~: (amigosDe redAmigosDe usuario1) ~?= [usuario2,usuario3,usuario4]
+    "Caso 4: Usuario amigo de todos" ~: (amigosDe redAmigoDeTodos usuario10) ~?= todosLosUsuariosSin10
+    ]
+
+-- Para estos casos de test las publicaciones no son importantes
+testsuiteCantidadDeAmigos = test [
+    "Caso 1: Usuario sin amigos" ~: (cantidadDeAmigos redUsuarioXSinAmigo usuario9) ~?= 0
+    "Caso 2: Usuario con 3 amigos" ~: (cantidadDeAmigos redAmigosDe usuario1) ~?= 3
+    "Caso 3: Usuario amigo de todos" ~: (cantidadDeAmigos redAmigoDeTodos usuario10) ~?= 11 -- Usuarios totales de la red
     ]
 
 -- Para estos casos de test las publicaciones no son importantes
@@ -101,6 +126,27 @@ redUsuariosSinNombresRepetidos = (usuariosSinNombresRepetidos, relacionesVacia, 
 
 usuariosConNombresRepetidos = [usuario9, usuario8, usuario4, usuario3, usuario5, usuario6]
 redUsuariosConNombresRepetidos = (usuariosConNombresRepetidos, relacionesVacia, publicacionesVacia)
+
+-- Para el test suite amigosDe y cantidadDeAmigos
+usuariosAmigosDe = [usuario1,usuario2,usuario3,usuario4]
+
+redUsuarioXSinAmigos = (todosLosUsuarios, relacionesSinUsuarioX, publicacionesVacia)
+relacionesSinUsuario = [relacion1_2, relacion3_1, relacion4_2, relacion5_1, relacion2_3, relacion1_4, relacion4_5, relacion8_5, relacion8_12, relacion10_8, relacion12_5, relacion10_12, relacion5_10, relacion7_6, relacion4_11]
+
+relacion7_6 = (usuario6, usuario7)
+relacion4_11 = (usuario4, usuario11)
+
+relacionesAmigosDe = [relacion1_2, relacion3_1, relacion2_3, relacion1_4] -- Notar la posición cambiante 
+                                                                          -- De los usuarios en las relaciones
+
+redRelacionesVacias = (usuariosB, relacionesVacia, publicacionesVacia)
+redAmigosDe = (usuariosAmigosDe, relacionesAmigosDe, publicacionesVacia) -- Es indistinto la presencia de
+                                                                         -- Publicaciones para este ejercicio
+                                                                         -- En particular
+
+redAmigoDeTodos = (todosLosUsuarios, relacionAmigoDeTodos,publicacionesVacia)      
+relacionAmigoDeTodos = [relacion10_1,relacion10_12,relacion10_2,relacion11_10,relacion3_10,relacion10_4,relacion5_10,relacion10_6,relacion7_10,relacion10_8,relacion10_9]                                                                   
+todosLosUsuariosSin10 = [usuario1, usuario2, usuario3, usuario4, usuario5, usuario6, usuario7, usuario8, usuario9, usuario11, usuario12]
 
 -- Para el test suite usuarioConMasAmigos
 usuariosA = [usuario1, usuario2, usuario3, usuario4, usuario5, usuario8]

@@ -162,6 +162,21 @@ tieneUnSeguidorFiel red u = verificaSeguidorFiel (publicacionesDe red u) (public
             | pertenece u (likesDePublicacion pub) == True = verificaSeguidorFiel pubsTotales pubs (u:us)
             | otherwise = verificaSeguidorFiel pubsTotales pubsTotales us
 
--- describir qué hace la función: .....
+-- Verifica que (en caso que exitsa) la secuenciaDeAmigos encontrada sea de la Red y una cadenaDeAmigo
 existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
-existeSecuenciaDeAmigos = undefined
+existeSecuenciaDeAmigos ([],[],[]) _ _ = False
+existeSecuenciaDeAmigos red u1 u2
+    | secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1] == [] = False
+    | longitud (secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1]) > 0 && sonDeLaRed red (secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1]) && cadenaDeAmigos (secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1]) red = True
+
+-- Busca una secuencia de Amigos entre dos usuarios: partir del usuario base, busca dentro
+-- de sus amistades relaciones hasta llegar con el segundo usuario
+secuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> [Usuario] -> [Usuario] -> [Usuario]
+secuenciaDeAmigos _ _ _ [] _ = []
+secuenciaDeAmigos red u1 u2 (u:us) (x:xs)
+    | pertenece u2 (u:us)          = [u2]
+    | not (sinRepetidos (x:xs))    = secuenciaDeAmigos red u1 u2 (amigosDe red (last (init xs))) (x:(init xs))
+    | pertenece u1 (u:us)          = secuenciaDeAmigos red u1 u2 (quitarPrimeraAparicion u1 (u:us)) (x:xs)
+    | pertenece u (amigosDe red u) = secuenciaDeAmigos red u1 u2 (quitarPrimeraAparicion u (amigosDe red u)) (x:xs)
+    | otherwise                    = u:(secuenciaDeAmigos red u1 u2 (amigosDe red u) (u:(x:xs)))
+
