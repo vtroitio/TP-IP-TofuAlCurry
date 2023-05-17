@@ -192,7 +192,6 @@ existeSecuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> Bool
 existeSecuenciaDeAmigos ([],[],[]) _ _ = False
 existeSecuenciaDeAmigos (_,[],_) _ _ = False
 existeSecuenciaDeAmigos red u1 u2
-    | u1 == u2 = True
     | null (amigosDe red u1) || null (amigosDe red u2) = False
     | last (secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1] [amigosDe red u1] [u1]) /= u2 = False
     | (last (secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1] [amigosDe red u1] [u1]) == u2) && cadenaDeAmigos ([u1]++(secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1] [amigosDe red u1] [u1])) red = True
@@ -201,7 +200,7 @@ existeSecuenciaDeAmigos red u1 u2
 -- Busca una secuencia de Amigos entre dos usuarios: partir del usuario base, busca dentro
 -- de sus amistades relaciones hasta llegar con el segundo usuario
 -- red usuario1 usuario2 [amigos de usuario 1] 
-secuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> [Usuario] -> [Usuario] -> [[Usuario]] -> [Usuario] -> [Usuario]
+{- secuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> [Usuario] -> [Usuario] -> [[Usuario]] -> [Usuario] -> [Usuario]
 secuenciaDeAmigos _ _ _ [] _ [[]] _ = []
 secuenciaDeAmigos red u1 u2 (u:us) (x:xs) (y:ys) (z:zs)
     | u == u2  = [u2]
@@ -209,5 +208,19 @@ secuenciaDeAmigos red u1 u2 (u:us) (x:xs) (y:ys) (z:zs)
     | pertenece x (u:us) = secuenciaDeAmigos red u1 u2 (quitarPrimeraAparicion x (u:us)) xs (init (y:ys)++[quitarPrimeraAparicion x (u:us)]) (z:zs)
     | (longitud(y:ys) > 1) && null (last ys) && (longitud y == 1)= []   
     | (longitud(y:ys) > 1) && (null ys || null (last ys)) && (longitud y > 1) = secuenciaDeAmigos red u1 u2 ((amigosDe red (head (tail y)))) ((init (x:xs))++[head(tail y)]) (tail y : [amigosDe red (head (tail y))]) ((init(z:zs))++[head(tail y)])
-    | otherwise = u:secuenciaDeAmigos red u1 u2 (amigosDe red u) ((x:xs)++[u]) ((y:ys)++[amigosDe red u]) ((z:zs)++[u])
+    | otherwise = u:secuenciaDeAmigos red u1 u2 (amigosDe red u) ((x:xs)++[u]) ((y:ys)++[amigosDe red u]) ((z:zs)++[u]) -}
 
+secuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> [Usuario] -> [Usuario] -> [[Usuario]] -> [Usuario] -> [Usuario]
+secuenciaDeAmigos _ _ _ [] _ [[]] _ = []
+secuenciaDeAmigos red u1 u2 (u:us) (x:xs) (y:ys) (z:zs)
+    | u == u2  = [u2]
+    | u == u1 = secuenciaDeAmigos red u1 u2 us xs (init (y:ys)++[us]) (z:zs)
+    | longitud(u:us) == 1 && u == u2 = [u2]
+    | longitud(u:us) == 1 && u /= u2 = []
+    | pertenece x (amigosDe red u) = secuenciaDeAmigos red u1 u2 (quitarPrimeraAparicion x (amigosDe red u)) xs (init (y:ys)++[quitarPrimeraAparicion x (u:us)]) (z:zs)
+    | pertenece x (u:us) = secuenciaDeAmigos red u1 u2 (quitarPrimeraAparicion x (u:us)) xs (init (y:ys)++[quitarPrimeraAparicion x (u:us)]) (z:zs)
+    | pertenece x (amigosDe red u) && longitud(amigosDe red u) == 1 = secuenciaDeAmigos red u1 u2 (amigosDe red (head(last(init(y:ys))))) (tail(x:xs)++[head(last(init(y:ys)))]) (init(y:ys)++[[head(last(init(y:ys)))]]) (tail(z:zs)++[head(last(init(y:ys)))]) 
+    | pertenece x (amigosDe red u) && (longitud(amigosDe red u) == 1) && (longitud(y:ys)) == 1 = []
+    {- | (longitud(y:ys) > 1) && null (last ys) && (longitud y == 1)= []   
+    | (longitud(y:ys) > 1) && (null ys || null (last ys)) && (longitud y > 1) = secuenciaDeAmigos red u1 u2 ((amigosDe red (head (tail y)))) ((init (x:xs))++[head(tail y)]) (tail y : [amigosDe red (head (tail y))]) ((init(z:zs))++[head(tail y)]) -}
+    | otherwise = u:secuenciaDeAmigos red u1 u2 (amigosDe red u) ((x:xs)++[u]) ((y:ys)++[amigosDe red u]) ((z:zs)++[u])
