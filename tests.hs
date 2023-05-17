@@ -178,7 +178,9 @@ testsuiteExisteSecuenciaDeAmigos = test [
     "Caso 3: u2 sin amigos" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigos usuario5 usuario8) ~?= False,
     "Caso 4: u1 y u2 con amigos, u1 = u2" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigos usuario1 usuario1) ~?= True,
     "Caso 5: u1 y u2 con amigos, u1 /= u2 (existe)" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigos usuario7 usuario11) ~?= True,
-    "Caso 6: u1 y u2 con amigos, u1 /= u2 (no existe)" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigos usuario5 usuario3) ~?= False
+    "Caso 6: u1 y u2 con amigos, u1 /= u2 (no existe)" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigos usuario5 usuario3) ~?= False,
+    "Caso 7: relacion circular" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigosCircular usuario1 usuario7) ~?= True,
+    "Caso 8: relacion circular2" ~: (existeSecuenciaDeAmigos redSecuenciaDeAmigosCircular2 usuario1 usuario7) ~?= True 
     ]
 -- No sabemos si podemos usar esto o no
 expectAny actual expected = elem actual expected ~? ("expected any of: " ++ show expected ++ "\n but got: " ++ show actual)
@@ -296,6 +298,15 @@ relacion12_11 = (usuario12, usuario11)
 relacion5_2 = (usuario5, usuario2)
 relacion6_5 = (usuario6, usuario5)
 
+relacion7_4 = (usuario7, usuario4)
+relacion1_6 = (usuario1,usuario6)
+relacion2_6 = (usuario2, usuario6)
+relacion6_3 = (usuario6, usuario3)
+
 relacionesSecuenciaDeAmigos = [relacion7_1, relacion1_4, relacion4_3, relacion3_12, relacion12_11, relacion5_2, relacion6_5]
+relacionesSecuenciaCircular = [relacion1_2,relacion2_3,relacion4_3,relacion7_4,relacion4_5,relacion6_5,relacion1_6]
+relacionesSecuenciaCircular2 = [relacion1_2,relacion5_1, relacion5_2, relacion2_6, relacion3_1, relacion6_3, relacion2_3,relacion4_3,relacion7_4,relacion4_5,relacion6_5,relacion1_6]
 
 redSecuenciaDeAmigos = (todosLosUsuarios, relacionesSecuenciaDeAmigos, publicaciones_seguidorFiel)
+redSecuenciaDeAmigosCircular = (todosLosUsuarios, relacionesSecuenciaCircular, publicaciones_seguidorFiel)
+redSecuenciaDeAmigosCircular2 = (todosLosUsuarios, relacionesSecuenciaCircular2, publicaciones_seguidorFiel)
