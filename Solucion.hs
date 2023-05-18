@@ -83,13 +83,20 @@ longitud :: [t] -> Int
 longitud [] = 0
 longitud (_:xs) = 1 + longitud xs
 
+-- Dadas dos listas, devuelve la segunda lista sin los elementos que pertenecían a la primera
+quitarElemsDeLista :: (Eq t) => [t] -> [t] -> [t]
+quitarElemsDeLista _ [] = []
+quitarElemsDeLista [] ys = ys
+quitarElemsDeLista (x:xs) (y:ys)
+    | pertenece x (y:ys) = quitarElemsDeLista xs (quitarPrimeraAparicion x (y:ys))
+    | otherwise = quitarElemsDeLista xs (y:ys)
 
 -- Dada una lista y un elemento, devuelve la lista sin la primera aparicion de dicho elemento
 quitarPrimeraAparicion :: (Eq t) => t -> [t] -> [t]
 quitarPrimeraAparicion _ [] = []
 quitarPrimeraAparicion e (x:xs)
     | e == x        = xs
-    | otherwise     = (x:quitarPrimeraAparicion e xs)
+    | otherwise     = x:quitarPrimeraAparicion e xs
 
 -- Ejercicios
 
@@ -129,7 +136,7 @@ cantidadDeAmigos red u = longitud (amigosDe red u)
 -- Compara la cantidad de amigos de todos los usuarios en la red social y devuelve el que tiene más amigos
 usuarioConMasAmigos :: RedSocial -> Usuario
 usuarioConMasAmigos red = comparaCantidadDeAmigosDeUsuarios red (usuarios red) (head (usuarios red))
-    where 
+    where
           comparaCantidadDeAmigosDeUsuarios :: RedSocial -> [Usuario] -> Usuario -> Usuario
           comparaCantidadDeAmigosDeUsuarios _ [] u = u
           comparaCantidadDeAmigosDeUsuarios red us u
@@ -147,7 +154,7 @@ estaRobertoCarlos red = longitud (amigosDe red (usuarioConMasAmigos red)) > 10
 -- Dada una red y un usuario devuelve las publicaciones de dicho usuario
 publicacionesDe :: RedSocial -> Usuario -> [Publicacion]
 publicacionesDe red u = publicacionesDeUsuario (publicaciones red) u
-    where 
+    where
           publicacionesDeUsuario :: [Publicacion] -> Usuario -> [Publicacion]
           publicacionesDeUsuario [] _ = []
           publicacionesDeUsuario (pub:pubs) u
@@ -159,7 +166,7 @@ publicacionesDe red u = publicacionesDeUsuario (publicaciones red) u
 -- Dada una red y un usuario devuelve todas las publicaciones, de dicha red, que le gustan a dicho usuario
 publicacionesQueLeGustanA :: RedSocial -> Usuario -> [Publicacion]
 publicacionesQueLeGustanA red u = publicacionesQueLeGustanAlUsuario (publicaciones red) u -- verifica likes tiene nombre que pinta booleano
-    where 
+    where
           publicacionesQueLeGustanAlUsuario :: [Publicacion] -> Usuario -> [Publicacion]
           publicacionesQueLeGustanAlUsuario [] _ = []
           publicacionesQueLeGustanAlUsuario (pub:pubs) u
@@ -194,7 +201,7 @@ existeSecuenciaDeAmigos (_,[],_) _ _ = False
 existeSecuenciaDeAmigos red u1 u2
     | null (amigosDe red u1) || null (amigosDe red u2) = False
     | u1 == u2 = True
-    | not(pertenece u2 (secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1] [amigosDe red u1] [u1])) = False
+    | not (pertenece u2 (secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1] [amigosDe red u1] [u1])) = False
     | pertenece u2 (secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1] [amigosDe red u1] [u1]) = True
     | (last (secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1] [amigosDe red u1] [u1]) == u2) && cadenaDeAmigos ([u1]++(secuenciaDeAmigos red u1 u2 (amigosDe red u1) [u1] [amigosDe red u1] [u1])) red = True
     | otherwise = False
@@ -205,11 +212,17 @@ existeSecuenciaDeAmigos red u1 u2
 secuenciaDeAmigos :: RedSocial -> Usuario -> Usuario -> [Usuario] -> [Usuario] -> [[Usuario]] -> [Usuario] -> [Usuario]
 secuenciaDeAmigos _ _ _ [] _ [[]] _ = []
 secuenciaDeAmigos red u1 u2 (u:us) (x:xs) (y:ys) (z:zs)
-    | u == u2  = [u2]
-    | u == u1 = secuenciaDeAmigos red u1 u2 us xs (init (y:ys)++[us]) (z:zs)
-    | not(pertenece x (amigosDe red u)) = u:secuenciaDeAmigos red u1 u2 (amigosDe red u) ((x:xs)++[u]) ((y:ys)++[amigosDe red u]) ((z:zs)++[u]) 
-    | longitud(amigosDe red u) > 1 = secuenciaDeAmigos red u1 u2 (quitarPrimeraAparicion x (amigosDe red u)) (xs++[u]) ((y:ys)++[quitarPrimeraAparicion x (u:us)]) ((z:zs)++[u])
-    | pertenece x (u:us) = secuenciaDeAmigos red u1 u2 (quitarPrimeraAparicion x (u:us)) xs (init (y:ys)++[quitarPrimeraAparicion x (u:us)]) (z:zs)
-    | (longitud(amigosDe red u) == 1) = secuenciaDeAmigos red u1 u2 us (x:xs) (init(y:ys)++[us]) (z:zs)
-    | null us && (longitud(y:ys) == 1 ) && null ys = []
-    | otherwise = u:secuenciaDeAmigos red u1 u2 (amigosDe red u) ((x:xs)++[u]) ((y:ys)++[amigosDe red u]) ((z:zs)++[u]) 
+    | pertenece u2 (u:us)  = [u2] --si el usuario 2 pertenece a la lista de amigos de u1 ya da verdadero
+    | not (pertenece x (amigosDe red u)) = u:secuenciaDeAmigos red u1 u2 (amigosDe red u) (xs++[u]) ((y:ys)++[amigosDe red u]) ((z:zs)++[u])
+    | longitud (quitarElemsDeLista (z:zs) (amigosDe red u)) >= 1 = secuenciaDeAmigos red u1 u2 (quitarElemsDeLista (z:zs) (amigosDe red u)) (xs++[u]) ((y:ys)++[quitarElemsDeLista (z:zs) (amigosDe red u)]) ((z:zs)++[u])
+    | pertenece x (u:us) = secuenciaDeAmigos red u1 u2 (quitarElemsDeLista (z:zs) (u:us)) xs (init (y:ys)++[quitarElemsDeLista (z:zs) (u:us)]) (z:zs)
+    | longitud (amigosDe red u) == 1 = secuenciaDeAmigos red u1 u2 us (x:xs) (init (y:ys)++[us]) (z:zs)
+    | null (quitarElemsDeLista (z:zs) (amigosDe red u)) && longitud (u:us) > 1 = secuenciaDeAmigos red u1 u2 us (x:xs) (init (y:ys)++[us]) (z:zs)
+    | otherwise =[]
+
+-- (u:us) representa la lista de amigos del usuario que último fue agregado a la cadena
+-- (x:xs) retiene el valor del último usuario agregado para verificar si una lista de amigos de un usuario
+--        efectivamente se relaciona con el ultimo usuario agregado
+-- (y:ys) guarda en una lista, las listas de los amigos de los usuarios que fueron agregados a la cadena
+-- (z:zs) representa la cadena entera y sirve para no volver a evaluar los amigos de usuarios que ya fueron
+--        incluidos a la  cadena
